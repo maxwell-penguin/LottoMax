@@ -75,81 +75,65 @@ const tabContentVariants = {
   exit: { opacity: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
 };
 
-function AboutIconList({ items }) {
-  return (
-    <ul className="about-icon-list">
-      {items.map((item, i) => (
-        <li key={i} className="about-icon-list__item">
-          <span className="about-icon-list__emoji" aria-hidden>{item.icon}</span>
-          <span>{item.text}</span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
 function AboutPanel() {
   const current = experienceData[0];
   const building = aboutData.aboutCurrentlyBuilding;
 
   return (
     <div className="tab-panel tab-panel--about">
-      <div className="about-islands">
-        <header className="about-block about-block--intro">
-          <div className="about-intro-top">
-            <img src="/profile.png" alt="Maxwell Peng" className="about-profile-photo" />
-            <div className="about-intro-identity">
-              <h1 className="about-hero-title">{aboutData.name}</h1>
-              <span className="about-current-pill">
-                <span className="about-current-pill__dot" aria-hidden />
-                {current.role} at {current.company}
-              </span>
-            </div>
+      <div className="about-page">
+        <header className="about-hero">
+          <div className="about-hero__name-row">
+            <img src="/profile.png" alt="Maxwell Peng" className="about-photo" />
+            <h1 className="about-name">{aboutData.name}</h1>
           </div>
+          <span className="about-pill">{current.role} at {current.company}</span>
           <p className="about-tagline">{aboutData.aboutTagline}</p>
-          <div className="about-prose">
-            <p>{aboutData.aboutBio}</p>
-          </div>
-          <p className="about-open-to">{aboutData.aboutOpenTo}</p>
+          <p className="about-body">{aboutData.aboutBio}</p>
+          <p className="about-body">{aboutData.aboutOpenTo}</p>
         </header>
 
-        <section className="about-block about-block--card about-block--highlights">
-          <h2 className="about-subheading">highlights</h2>
-          <ul className="about-highlights">
+        <section className="about-section">
+          <h2 className="about-label">highlights</h2>
+          <ul className="about-list">
             {aboutData.aboutHighlights.map((line, i) => (
-              <li key={i} className="about-highlight-card">{line}</li>
+              <li key={i}>{line}</li>
             ))}
           </ul>
         </section>
 
-        <div className="about-islands__pair">
-          <section className="about-block about-block--card">
-            <h2 className="about-subheading">{aboutData.tryNextLabel}</h2>
-            <AboutIconList items={aboutData.tryNext} />
-          </section>
-          <section className="about-block about-block--card">
-            <h2 className="about-subheading">{aboutData.intoLabel}</h2>
-            <AboutIconList items={aboutData.into} />
-          </section>
-        </div>
-
-        <section className="about-block about-building-block">
-          <h2 className="about-subheading">currently building</h2>
-          <div className="about-building-card">
-            <div className="about-building-card__header">
-              <span className="about-building-card__dot" aria-hidden />
-              <span className="about-building-card__name">{building.name}</span>
+        <section className="about-section">
+          <div className="about-interests">
+            <div className="about-interests__col">
+              <h2 className="about-label">would love to try next</h2>
+              <p className="about-body">
+                {aboutData.tryNext.map((item) => item.text).join(', ')}
+              </p>
             </div>
-            <p className="about-building-card__desc">{building.description}</p>
-            <a
-              href={building.url}
-              className="about-building-card__link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {building.url.replace('https://', '')} →
-            </a>
+            <div className="about-interests__col">
+              <h2 className="about-label">into</h2>
+              <p className="about-body">
+                {aboutData.into.map((item) => item.text).join(', ')}
+              </p>
+            </div>
           </div>
+        </section>
+
+        <section className="about-section">
+          <h2 className="about-label">currently building</h2>
+          <p className="about-building">
+            <span className="about-building__name">{building.name}</span>
+            {' — '}
+            {building.description}
+          </p>
+          <a
+            href={building.url}
+            className="about-building__link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {building.url.replace('https://', '')}
+          </a>
         </section>
       </div>
     </div>
@@ -311,7 +295,7 @@ function GalleryPanel() {
 function ResumePanel() {
   return (
     <div className="tab-panel tab-panel--list tab-panel--resume">
-      <div className="resume-card about-block about-block--card">
+      <div className="resume-card">
         <div className="resume-toolbar">
           <a
             href={RESUME_URL}
