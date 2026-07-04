@@ -316,22 +316,20 @@ function GalleryPanel() {
 function ResumePanel() {
   return (
     <div className="tab-panel tab-panel--list tab-panel--resume">
-      <div className="resume-card">
-        <div className="resume-toolbar">
-          <a
-            href={RESUME_URL}
-            className="resume-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Download ↓
-          </a>
+      <div className="resume-window">
+        <div className="resume-window__titlebar">
+          <div className="resume-window__dots">
+            <span className="resume-window__dot resume-window__dot--red" />
+            <span className="resume-window__dot resume-window__dot--yellow" />
+            <span className="resume-window__dot resume-window__dot--green" />
+          </div>
+          <span className="resume-window__title">resume.pdf</span>
         </div>
-        <div className="resume-embed-wrap">
+        <div className="resume-window__body">
           <iframe
             src={`${RESUME_URL}#view=FitH`}
             title="Maxwell Peng Resume"
-            className="resume-embed"
+            className="resume-window__iframe"
           />
         </div>
         <div className="resume-mobile-fallback">
@@ -341,10 +339,18 @@ function ResumePanel() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            View Resume →
+            View Resume
           </a>
         </div>
       </div>
+      <a
+        href={RESUME_URL}
+        className="resume-download"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Download
+      </a>
     </div>
   );
 }
