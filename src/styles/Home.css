@@ -125,7 +125,7 @@ body {
 
 .tab-panel {
   max-width: 42rem;
-  padding-top: 0.5rem;
+  padding-top: 1.25rem;
   padding-bottom: 1rem;
 }
 
@@ -141,7 +141,7 @@ body {
   flex-direction: column;
   justify-content: center;
   min-height: 100%;
-  padding-top: 0;
+  padding-top: 1rem;
   padding-bottom: 0;
 }
 
@@ -177,16 +177,36 @@ body {
   padding-bottom: 8px;
 }
 
-.about-block--intro .about-hero-title {
-  margin-bottom: 24px;
+.about-intro-top {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.about-profile-photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(0, 0, 0, 0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.about-intro-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.about-intro-identity .about-hero-title {
+  margin-bottom: 0;
 }
 
 .about-block--intro .about-prose p:last-child {
   margin-bottom: 0;
-}
-
-.about-block--intro .about-current-role {
-  margin-top: 1.25rem;
 }
 
 .about-open-to {
@@ -293,16 +313,17 @@ body {
 }
 
 .about-current-role {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #f97316;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #ea6c0a;
   margin-top: 0;
   margin-bottom: 0;
 }
 
 .about-current-role__label {
-  font-weight: 600;
-  color: #f97316;
+  font-weight: 700;
+  color: #ea6c0a;
 }
 
 .portfolio-bottom-nav {
@@ -341,6 +362,8 @@ body {
 
 .portfolio-bottom-nav__tab.is-active {
   color: #0a0a0a;
+  font-weight: 700;
+  font-size: 0.875rem;
 }
 
 .portfolio-bottom-nav__tab.is-active::after {
@@ -1076,6 +1099,60 @@ body {
 .resume-link:hover {
   color: #000000;
   transform: translateX(5px);
+}
+
+/* Live badge on project cards */
+.project-live-badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.55rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 100px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #16a34a;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.project-live-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  flex-shrink: 0;
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Mobile: experience/gallery/resume tab horizontal padding */
+@media (max-width: 640px) {
+  .tab-panel--list:not(.tab-panel--projects) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .project-carousel__controls {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .about-profile-photo {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 @media (max-width: 768px) {

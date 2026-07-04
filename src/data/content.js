@@ -16,9 +16,9 @@ export const aboutData = {
   aboutOpenTo:
     "Open to internships, collaborations, and good conversations about product, startups, or chess openings.",
   aboutHighlights: [
-    "Interned at Autumn — engineered provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
-    "Projects Director at Western Founders Network — workshops, hackathons, and Demo Day for 700+ members",
-    "Team Canada Junior National Team — badminton, PanAm competitor, #2 U17 in Canada",
+    "Interned at Autumn: built provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
+    "Projects Director at Western Founders Network, running workshops, hackathons, and Demo Day for 700+ members",
+    "Team Canada Junior National Team: badminton, PanAm competitor, ranked #2 U17 in Canada",
     "IB graduate from White Oaks Secondary",
     "Spent a couple months doing UGC content creation",
   ],

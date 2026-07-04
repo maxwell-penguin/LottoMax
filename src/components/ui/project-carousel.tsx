@@ -24,6 +24,9 @@ export interface ProjectCarouselItem {
   image?: string;
 }
 
+const isLiveProject = (link?: string) =>
+  !!link && link !== '#' && !link.includes('github.com');
+
 export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -170,6 +173,12 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                     aria-hidden
                   />
                 ) : null}
+                {isLiveProject(project.link) && (
+                  <div className="project-live-badge" aria-label="Live project">
+                    <span className="project-live-badge__dot" aria-hidden />
+                    Live
+                  </div>
+                )}
                 <ExpandableCard
                   id={project.id}
                   title={project.title}

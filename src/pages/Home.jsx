@@ -97,17 +97,26 @@ function AboutPanel() {
     <div className="tab-panel tab-panel--about">
       <div className="about-islands">
         <header className="about-block about-block--intro">
-          <h1 className="about-hero-title">{aboutData.name}</h1>
+          <div className="about-intro-top">
+            <img
+              src="/profile.png"
+              alt="Maxwell Peng"
+              className="about-profile-photo"
+            />
+            <div className="about-intro-identity">
+              <h1 className="about-hero-title">{aboutData.name}</h1>
+              <p className="about-current-role">
+                <span className="about-current-role__label">Currently</span>
+                {' — '}
+                {current.role} at {current.company}
+              </p>
+            </div>
+          </div>
           <div className="about-prose">
             <p>{aboutData.aboutTagline}</p>
             <p>{aboutData.aboutBio}</p>
           </div>
           <p className="about-open-to">{aboutData.aboutOpenTo}</p>
-          <p className="about-current-role">
-            <span className="about-current-role__label">Currently</span>
-            {' — '}
-            {current.role} at {current.company}
-          </p>
         </header>
 
         <section className="about-block about-block--card about-block--highlights">
