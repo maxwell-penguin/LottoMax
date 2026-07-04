@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Home.css';
 import {
   experienceData,
@@ -75,55 +75,49 @@ const tabContentVariants = {
   exit: { opacity: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
 };
 
-/** Renders `a · b · c` with breaks only between phrases so separators are not orphaned. */
-function AboutDotLine({ text }) {
-  const parts = text.split(' · ').map((p) => p.trim()).filter(Boolean);
+function AboutIconList({ items }) {
   return (
-    <p className="about-dot-line">
-      {parts.map((part, i) => (
-        <Fragment key={`${i}-${part}`}>
-          {i > 0 && <span className="about-dot-line__sep"> · </span>}
-          <span className="about-dot-line__chunk">{part}</span>
-        </Fragment>
+    <ul className="about-icon-list">
+      {items.map((item, i) => (
+        <li key={i} className="about-icon-list__item">
+          <span className="about-icon-list__emoji" aria-hidden>{item.icon}</span>
+          <span>{item.text}</span>
+        </li>
       ))}
-    </p>
+    </ul>
   );
 }
 
 function AboutPanel() {
   const current = experienceData[0];
+  const building = aboutData.aboutCurrentlyBuilding;
 
   return (
     <div className="tab-panel tab-panel--about">
       <div className="about-islands">
         <header className="about-block about-block--intro">
           <div className="about-intro-top">
-            <img
-              src="/profile.png"
-              alt="Maxwell Peng"
-              className="about-profile-photo"
-            />
+            <img src="/profile.png" alt="Maxwell Peng" className="about-profile-photo" />
             <div className="about-intro-identity">
               <h1 className="about-hero-title">{aboutData.name}</h1>
-              <p className="about-current-role">
-                <span className="about-current-role__label">Currently</span>
-                {' — '}
+              <span className="about-current-pill">
+                <span className="about-current-pill__dot" aria-hidden />
                 {current.role} at {current.company}
-              </p>
+              </span>
             </div>
           </div>
+          <p className="about-tagline">{aboutData.aboutTagline}</p>
           <div className="about-prose">
-            <p>{aboutData.aboutTagline}</p>
             <p>{aboutData.aboutBio}</p>
           </div>
           <p className="about-open-to">{aboutData.aboutOpenTo}</p>
         </header>
 
         <section className="about-block about-block--card about-block--highlights">
-          <h2 className="about-subheading">some stuff i did:</h2>
+          <h2 className="about-subheading">highlights</h2>
           <ul className="about-highlights">
             {aboutData.aboutHighlights.map((line, i) => (
-              <li key={i}>{line}</li>
+              <li key={i} className="about-highlight-card">{line}</li>
             ))}
           </ul>
         </section>
@@ -131,17 +125,32 @@ function AboutPanel() {
         <div className="about-islands__pair">
           <section className="about-block about-block--card">
             <h2 className="about-subheading">{aboutData.tryNextLabel}</h2>
-            <div className="about-prose about-prose--snippet">
-              <AboutDotLine text={aboutData.tryNext} />
-            </div>
+            <AboutIconList items={aboutData.tryNext} />
           </section>
           <section className="about-block about-block--card">
             <h2 className="about-subheading">{aboutData.intoLabel}</h2>
-            <div className="about-prose about-prose--snippet">
-              <AboutDotLine text={aboutData.into} />
-            </div>
+            <AboutIconList items={aboutData.into} />
           </section>
         </div>
+
+        <section className="about-block about-building-block">
+          <h2 className="about-subheading">currently building</h2>
+          <div className="about-building-card">
+            <div className="about-building-card__header">
+              <span className="about-building-card__dot" aria-hidden />
+              <span className="about-building-card__name">{building.name}</span>
+            </div>
+            <p className="about-building-card__desc">{building.description}</p>
+            <a
+              href={building.url}
+              className="about-building-card__link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {building.url.replace('https://', '')} →
+            </a>
+          </div>
+        </section>
       </div>
     </div>
   );

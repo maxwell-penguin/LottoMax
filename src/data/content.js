@@ -23,11 +23,27 @@ export const aboutData = {
     "Spent a couple months doing UGC content creation",
   ],
   tryNextLabel: "would love to try next:",
-  tryNext:
-    "Blockchain · Machine Learning · Golf · Skiing · Food challenge",
+  tryNext: [
+    { icon: "⛓️", text: "Blockchain" },
+    { icon: "🧠", text: "Machine Learning" },
+    { icon: "⛳", text: "Golf" },
+    { icon: "⛷️", text: "Skiing" },
+    { icon: "🍔", text: "Food challenge" },
+  ],
   intoLabel: "into:",
-  into:
-    "Poker · Stock market · Racket sports · Competitive swimming (8 years) · Hackathons · Food",
+  into: [
+    { icon: "🃏", text: "Poker" },
+    { icon: "📈", text: "Stock market" },
+    { icon: "🏸", text: "Racket sports" },
+    { icon: "🏊", text: "Competitive swimming (8 years)" },
+    { icon: "💻", text: "Hackathons" },
+    { icon: "🍜", text: "Food" },
+  ],
+  aboutCurrentlyBuilding: {
+    name: "Dice AI",
+    description: "A tax tool for content creators. Plugs into Twitch, YouTube, Stripe, and Patreon and tells you exactly what you owe.",
+    url: "https://creatordice.com",
+  },
 };
 
 export const educationData = {
