@@ -308,7 +308,7 @@ export function ExpandableCard({
                   layoutId={titleLayoutId}
                   className={cn(
                     !collapsedTitleClassName &&
-                      'text-lg font-bold leading-tight text-[#1A1A18]',
+                      'text-lg font-bold leading-tight text-[#2D2D2A]',
                     collapsedTitleClassName,
                   )}
                 >
@@ -318,7 +318,7 @@ export function ExpandableCard({
                   layoutId={descLayoutId}
                   className={cn(
                     !collapsedDescriptionClassName &&
-                      'mt-2 line-clamp-2 text-sm leading-snug text-[#6B6B66]',
+                      'mt-2 line-clamp-2 text-sm leading-snug text-[#5A5A55]',
                     collapsedDescriptionClassName,
                   )}
                 >
@@ -332,7 +332,7 @@ export function ExpandableCard({
                 layoutId={titleLayoutId}
                 className={cn(
                   !collapsedTitleClassName &&
-                    'text-lg font-bold leading-tight text-[#1A1A18]',
+                    'text-lg font-bold leading-tight text-[#2D2D2A]',
                   collapsedTitleClassName,
                 )}
               >
@@ -342,7 +342,7 @@ export function ExpandableCard({
                 layoutId={descLayoutId}
                 className={cn(
                   !collapsedDescriptionClassName &&
-                    'mt-2 line-clamp-2 text-sm leading-snug text-[#6B6B66]',
+                    'mt-2 line-clamp-2 text-sm leading-snug text-[#5A5A55]',
                   collapsedDescriptionClassName,
                 )}
               >
@@ -362,7 +362,7 @@ export function ExpandableCard({
           ) : null}
           {showExpandAffordance ? (
             <span
-              className="pointer-events-none absolute bottom-4 right-4 z-[1] rounded-full p-1 text-[#6B6B66]"
+              className="pointer-events-none absolute bottom-4 right-4 z-[1] rounded-full p-1 text-[#5A5A55]"
               aria-hidden
             >
               <Plus size={18} />
@@ -396,7 +396,7 @@ export function ExpandableCard({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#6B6B66] transition-colors hover:bg-[#EFEFEC] hover:text-[#1A1A18]"
+                className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#5A5A55] transition-colors hover:bg-[#EFEFEC] hover:text-[#2D2D2A]"
                 aria-label="Close"
               >
                 <X size={18} />
@@ -437,7 +437,7 @@ export function ExpandableCard({
                 {link ? (
                   <a
                     href={link}
-                    className="expandable-card__modal-link inline-flex items-center gap-1 font-medium text-[#4A6B5D] transition-all hover:translate-x-1 hover:text-[#1A1A18]"
+                    className="expandable-card__modal-link inline-flex items-center gap-1 font-medium text-[#4A6B5D] transition-all hover:translate-x-1 hover:text-[#2D2D2A]"
                     {...(link !== '#'
                       ? { target: '_blank', rel: 'noopener noreferrer' }
                       : {})}

@@ -340,7 +340,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
         <button
           type="button"
           onClick={() => scroll('left')}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EFEFEC] bg-white text-[#6B6B66] transition-all hover:text-[#1A1A18] hover:translate-x-[-2px]"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EFEFEC] bg-white text-[#5A5A55] transition-all hover:text-[#2D2D2A] hover:translate-x-[-2px]"
           aria-label="Previous project"
         >
           <ChevronLeft size={18} />
@@ -348,7 +348,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
         <button
           type="button"
           onClick={() => scroll('right')}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EFEFEC] bg-white text-[#6B6B66] transition-all hover:text-[#1A1A18] hover:translate-x-[2px]"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#EFEFEC] bg-white text-[#5A5A55] transition-all hover:text-[#2D2D2A] hover:translate-x-[2px]"
           aria-label="Next project"
         >
           <ChevronRight size={18} />

@@ -9,9 +9,9 @@
   --accent-forest:    #4A6B5D;
   --accent-blue:      #7BA7BC;
   --accent-green:     #8FAF8F;
-  --text-primary:     #1A1A18;
-  --text-secondary:   #6B6B66;
-  --text-tertiary:    #9B9B95;
+  --text-primary:     #2D2D2A;
+  --text-secondary:   #5A5A55;
+  --text-tertiary:    #7A7A74;
   --tag-bg:           #EEF4F7;
   --tag-text:         #4A7A91;
   --card-border:      #EFEFEC;
@@ -302,7 +302,7 @@ body {
 .about-body {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin: 0 0 0.5rem;
 }
 
@@ -322,7 +322,7 @@ body {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--text-tertiary);
+  color: #6B6B66;
   margin: 0 0 0.75rem;
 }
 
@@ -340,6 +340,7 @@ body {
   padding-left: 12px;
   border-left: 3px solid var(--accent-green);
   font-size: 0.95rem;
+  font-weight: 500;
   line-height: 1.6;
   color: var(--text-primary);
   transition: transform 0.2s ease, border-left-width 0.2s ease;
@@ -373,7 +374,7 @@ body {
 .about-building {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin: 0 0 0.4rem;
 }
 
@@ -1082,7 +1083,7 @@ body {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--text-tertiary);
+  color: #6B6B66;
   margin-top: 0;
   margin-bottom: 1rem;
 }
