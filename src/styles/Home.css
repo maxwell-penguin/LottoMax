@@ -1,11 +1,12 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 /* ── Design tokens ──────────────────────────────────────────────────────── */
 :root {
   --bg:               #F8F7F4;
   --card-bg:          #FFFFFF;
   --accent:           #E8856A;
+  --accent-forest:    #4A6B5D;
   --accent-blue:      #7BA7BC;
   --accent-green:     #8FAF8F;
   --text-primary:     #1A1A18;
@@ -17,6 +18,8 @@
   --card-shadow:      0 2px 12px rgba(0,0,0,0.06);
   --card-shadow-hover:0 4px 20px rgba(0,0,0,0.10);
   --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 }
 
 * {
@@ -63,10 +66,6 @@ body {
 /* —— Tabbed portfolio (post-loading) —— */
 .portfolio-container--tabs {
   background-color: var(--bg);
-  background-image: url('../assets/background.svg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   min-height: 100vh;
   min-height: 100dvh;
   height: 100dvh;
@@ -74,6 +73,25 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.portfolio-container--tabs::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../assets/background.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.portfolio-container--tabs > * {
+  position: relative;
+  z-index: 1;
 }
 
 .portfolio-top-bar {
@@ -93,11 +111,11 @@ body {
 }
 
 .portfolio-wordmark {
-  font-family: var(--font);
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
   font-style: normal;
   font-weight: 600;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--text-primary);
 }
 
@@ -191,45 +209,87 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
+  position: relative;
 }
 
 .about-hero__name-row {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   margin-bottom: 0.6rem;
 }
 
+.about-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px;
+  left: 60px;
+  width: 400px;
+  height: 300px;
+  background: radial-gradient(ellipse at center, rgba(232, 133, 106, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
 .about-photo {
-  width: 52px;
-  height: 52px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  filter: sepia(0.15) hue-rotate(340deg) saturate(1.1);
+  transition: transform 0.3s ease;
+}
+
+.about-photo:hover {
+  transform: scale(1.04);
 }
 
 .about-name {
-  font-family: var(--font);
-  font-size: clamp(1.9rem, 5vw, 2.8rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
   line-height: 1.1;
   margin: 0;
 }
 
-.about-pill {
+.about-name .about-name__letter {
   display: inline-block;
+}
+
+.about-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   width: fit-content;
   background: #FDF0EC;
   border: 1px solid #F5C4B4;
   border-radius: 999px;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--accent);
   line-height: 1.5;
   margin-bottom: 1rem;
+  animation: pill-pulse 2s ease-in-out infinite;
+}
+
+@keyframes pill-pulse {
+  0%, 100% { border-color: rgba(245, 196, 180, 0.6); }
+  50% { border-color: rgba(245, 196, 180, 0.3); }
+}
+
+.about-pill__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
 .about-tagline {
@@ -241,7 +301,7 @@ body {
 
 .about-body {
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--text-secondary);
   margin: 0 0 0.5rem;
 }
@@ -257,11 +317,11 @@ body {
 }
 
 .about-label {
-  font-family: var(--font);
+  font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: var(--text-tertiary);
   margin: 0 0 0.75rem;
 }
@@ -278,10 +338,16 @@ body {
 
 .about-list li {
   padding-left: 12px;
-  border-left: 2px solid var(--accent-green);
+  border-left: 3px solid var(--accent-green);
   font-size: 0.95rem;
   line-height: 1.6;
   color: var(--text-primary);
+  transition: transform 0.2s ease, border-left-width 0.2s ease;
+}
+
+.about-list li:hover {
+  transform: translateX(4px);
+  border-left-width: 4px;
 }
 
 /* Interests two-col */
@@ -306,26 +372,42 @@ body {
 /* Currently building */
 .about-building {
   font-size: 1rem;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--text-secondary);
   margin: 0 0 0.4rem;
 }
 
 .about-building__name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
   color: var(--accent);
-  font-weight: 600;
 }
 
 .about-building__link {
-  font-size: 0.92rem;
+  font-family: var(--font-display);
+  font-style: italic;
   font-weight: 500;
+  font-size: 0.95rem;
   color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
 }
 
-.about-building__link:hover {
-  text-decoration-thickness: 2px;
+.about-building__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.about-building__link:hover::after {
+  width: 100%;
 }
 
 .portfolio-bottom-nav {
@@ -552,6 +634,7 @@ body {
 
 /* Job title - Primary hierarchy */
 .experience-card--has-image .expandable-card__body > h3 {
+  font-family: var(--font);
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.25;
@@ -781,8 +864,9 @@ body {
 
 .expandable-card__modal-title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
   color: var(--text-primary);
 }
@@ -910,6 +994,7 @@ body {
 
 .project-carousel-card__title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -992,10 +1077,11 @@ body {
 }
 
 .gallery-heading {
+  font-family: var(--font-mono);
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   color: var(--text-tertiary);
   margin-top: 0;
   margin-bottom: 1rem;
@@ -1015,8 +1101,8 @@ body {
   border-radius: 6px;
   background: var(--card-bg);
   color: var(--text-secondary);
-  font-family: var(--font);
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
@@ -1122,9 +1208,11 @@ body {
 }
 
 .resume-link {
-  color: var(--accent);
+  color: var(--accent-forest);
   text-decoration: none;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -1185,8 +1273,8 @@ body {
   }
 
   .about-photo {
-    width: 44px;
-    height: 44px;
+    width: 64px;
+    height: 64px;
   }
 }
 

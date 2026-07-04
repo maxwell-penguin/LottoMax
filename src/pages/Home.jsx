@@ -75,6 +75,24 @@ const tabContentVariants = {
   exit: { opacity: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
 };
 
+function AnimatedName({ text }) {
+  return (
+    <h1 className="about-name">
+      {text.split('').map((char, i) => (
+        <motion.span
+          key={i}
+          className="about-name__letter"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: i * 0.04 }}
+        >
+          {char === ' ' ? ' ' : char}
+        </motion.span>
+      ))}
+    </h1>
+  );
+}
+
 function AboutPanel() {
   const current = experienceData[0];
   const building = aboutData.aboutCurrentlyBuilding;
@@ -85,16 +103,19 @@ function AboutPanel() {
         <header className="about-hero">
           <div className="about-hero__name-row">
             <img src="/profile.png" alt="Maxwell Peng" className="about-photo" />
-            <h1 className="about-name">{aboutData.name}</h1>
+            <AnimatedName text={aboutData.name} />
           </div>
-          <span className="about-pill">{current.role} at {current.company}</span>
+          <span className="about-pill">
+            <span className="about-pill__dot" aria-hidden />
+            Currently — {current.role} at {current.company}
+          </span>
           <p className="about-tagline">{aboutData.aboutTagline}</p>
           <p className="about-body">{aboutData.aboutBio}</p>
           <p className="about-body">{aboutData.aboutOpenTo}</p>
         </header>
 
         <section className="about-section">
-          <h2 className="about-label">highlights</h2>
+          <h2 className="about-label">selected work</h2>
           <ul className="about-list">
             {aboutData.aboutHighlights.map((line, i) => (
               <li key={i}>{line}</li>
@@ -105,13 +126,13 @@ function AboutPanel() {
         <section className="about-section">
           <div className="about-interests">
             <div className="about-interests__col">
-              <h2 className="about-label">would love to try next</h2>
+              <h2 className="about-label">what's next</h2>
               <p className="about-body">
                 {aboutData.tryNext.map((item) => item.text).join(', ')}
               </p>
             </div>
             <div className="about-interests__col">
-              <h2 className="about-label">into</h2>
+              <h2 className="about-label">off the clock</h2>
               <p className="about-body">
                 {aboutData.into.map((item) => item.text).join(', ')}
               </p>
@@ -120,7 +141,7 @@ function AboutPanel() {
         </section>
 
         <section className="about-section">
-          <h2 className="about-label">currently building</h2>
+          <h2 className="about-label">in the oven</h2>
           <p className="about-building">
             <span className="about-building__name">{building.name}</span>
             {' — '}

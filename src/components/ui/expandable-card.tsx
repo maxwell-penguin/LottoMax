@@ -437,7 +437,7 @@ export function ExpandableCard({
                 {link ? (
                   <a
                     href={link}
-                    className="expandable-card__modal-link inline-flex items-center gap-1 font-semibold text-[#1A1A18] transition-all hover:translate-x-1 hover:text-black"
+                    className="expandable-card__modal-link inline-flex items-center gap-1 font-medium text-[#4A6B5D] transition-all hover:translate-x-1 hover:text-[#1A1A18]"
                     {...(link !== '#'
                       ? { target: '_blank', rel: 'noopener noreferrer' }
                       : {})}
