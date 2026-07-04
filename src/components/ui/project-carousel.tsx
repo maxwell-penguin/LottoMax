@@ -28,25 +28,47 @@ const isLiveProject = (link?: string) =>
   !!link && link !== '#' && !link.includes('github.com');
 
 export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] }) {
+  const n = projects.length;
+
+  // Triple the list so we can loop in both directions.
+  // Layout: [first_copy 0..n-1] [middle_copy n..2n-1] [last_copy 2n..3n-1]
+  // We always start and return to the middle copy.
+  const displayItems = [...projects, ...projects, ...projects];
+
   const carouselRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const rafRef = useRef<number | null>(null);
-  const [focusedIndex, setFocusedIndex] = useState(0);
+  const isTeleporting = useRef(false);
+  const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialized = useRef(false);
+
+  // Keep focusedIndex in both state (triggers re-render) and a ref (always current
+  // in async callbacks without stale-closure issues).
+  const [focusedIndex, _setFocusedIndex] = useState(n);
+  const focusedIndexRef = useRef(n);
+  const setFocusedIndex = useCallback((idx: number) => {
+    focusedIndexRef.current = idx;
+    _setFocusedIndex(idx);
+  }, []);
+
   const [edgeInset, setEdgeInset] = useState(16);
 
+  // ── focus tracking ────────────────────────────────────────────────────────
+
   const updateFocusedCard = useCallback(() => {
+    if (isTeleporting.current) return;
     const container = carouselRef.current;
     if (!container) return;
 
-    const containerRect = container.getBoundingClientRect();
-    const containerCenter = containerRect.left + containerRect.width / 2;
+    const containerCenter =
+      container.getBoundingClientRect().left + container.getBoundingClientRect().width / 2;
     let closestIndex = 0;
     let closestDistance = Infinity;
 
     cardRefs.current.forEach((card, index) => {
       if (!card) return;
-      const cardRect = card.getBoundingClientRect();
-      const cardCenter = cardRect.left + cardRect.width / 2;
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
       const distance = Math.abs(containerCenter - cardCenter);
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -55,7 +77,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     });
 
     setFocusedIndex(closestIndex);
-  }, []);
+  }, [setFocusedIndex]);
 
   const updateLayout = useCallback(() => {
     const container = carouselRef.current;
@@ -75,54 +97,122 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     });
   }, [updateLayout]);
 
-  const scrollToIndex = useCallback((index: number) => {
+  // ── scrolling ─────────────────────────────────────────────────────────────
+
+  const scrollToIndex = useCallback((index: number, smooth = true) => {
     const container = carouselRef.current;
     const card = cardRefs.current[index];
     if (!container || !card) return;
 
     const containerRect = container.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
-    const containerCenter = containerRect.left + containerRect.width / 2;
-    const cardCenter = cardRect.left + cardRect.width / 2;
-    const scrollDelta = cardCenter - containerCenter;
+    const delta =
+      cardRect.left + cardRect.width / 2 - (containerRect.left + containerRect.width / 2);
 
-    container.scrollTo({
-      left: container.scrollLeft + scrollDelta,
-      behavior: 'smooth',
-    });
+    if (smooth) {
+      container.scrollTo({ left: container.scrollLeft + delta, behavior: 'smooth' });
+    } else {
+      // Direct assignment is universally instant (no animation) across all browsers.
+      container.scrollLeft += delta;
+    }
   }, []);
 
+  // ── infinite teleport ─────────────────────────────────────────────────────
+
+  // After the user scrolls into an outer copy, jump the scroll position to the
+  // visually identical position in the middle copy. The delta between equivalent
+  // cards is constant (width of one full copy), so the viewport looks unchanged.
+  const performTeleport = useCallback(
+    (fromIndex: number) => {
+      const container = carouselRef.current;
+      const fromCard = cardRefs.current[fromIndex];
+      if (!container || !fromCard) return;
+
+      // Mirror inside the middle copy.
+      const targetIndex = fromIndex < n ? fromIndex + n : fromIndex - n;
+      const targetCard = cardRefs.current[targetIndex];
+      if (!targetCard) return;
+
+      // scrollDelta = how far the target card is from the from-card in viewport space.
+      // Adding this to scrollLeft repositions the viewport without any visible jump.
+      const scrollDelta =
+        targetCard.getBoundingClientRect().left - fromCard.getBoundingClientRect().left;
+
+      isTeleporting.current = true;
+      container.scrollLeft += scrollDelta;
+      setFocusedIndex(targetIndex);
+
+      requestAnimationFrame(() => {
+        isTeleporting.current = false;
+      });
+    },
+    [n, setFocusedIndex],
+  );
+
+  // Schedule a teleport check 150 ms after the last scroll event — enough time
+  // for CSS snap to settle before we read card positions.
+  const scheduleScrollEndTeleport = useCallback(() => {
+    if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+    scrollEndTimerRef.current = setTimeout(() => {
+      const idx = focusedIndexRef.current;
+      if (idx < n || idx >= 2 * n) {
+        performTeleport(idx);
+      }
+    }, 150);
+  }, [n, performTeleport]);
+
+  // ── mount / resize ────────────────────────────────────────────────────────
+
   useEffect(() => {
-    cardRefs.current = cardRefs.current.slice(0, projects.length);
+    cardRefs.current = cardRefs.current.slice(0, displayItems.length);
 
     const frame = requestAnimationFrame(() => {
       updateLayout();
+      if (!isInitialized.current) {
+        isInitialized.current = true;
+        // Jump instantly to the middle copy so we can loop in both directions.
+        scrollToIndex(n, false);
+        setFocusedIndex(n);
+      }
     });
 
     const container = carouselRef.current;
-    if (!container) {
-      return () => cancelAnimationFrame(frame);
-    }
+    if (!container) return () => cancelAnimationFrame(frame);
 
-    container.addEventListener('scroll', scheduleFocusUpdate, { passive: true });
+    const handleScroll = () => {
+      scheduleFocusUpdate();
+      scheduleScrollEndTeleport();
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', scheduleFocusUpdate);
 
     return () => {
       cancelAnimationFrame(frame);
-      container.removeEventListener('scroll', scheduleFocusUpdate);
+      if (scrollEndTimerRef.current) clearTimeout(scrollEndTimerRef.current);
+      container.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', scheduleFocusUpdate);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
-  }, [projects.length, scheduleFocusUpdate, updateLayout]);
+  }, [
+    displayItems.length,
+    n,
+    scheduleFocusUpdate,
+    scheduleScrollEndTeleport,
+    scrollToIndex,
+    setFocusedIndex,
+    updateLayout,
+  ]);
+
+  // ── controls ──────────────────────────────────────────────────────────────
 
   const scroll = (direction: 'left' | 'right') => {
-    const nextIndex =
-      direction === 'left' ? focusedIndex - 1 : focusedIndex + 1;
-    if (nextIndex >= 0 && nextIndex < projects.length) {
-      scrollToIndex(nextIndex);
-    }
+    // Read from ref so rapid button presses don't use stale state.
+    const current = focusedIndexRef.current;
+    const next = direction === 'left' ? current - 1 : current + 1;
+    // Clamp to the physical bounds of the 3× list; the teleport wraps the logical index.
+    const safe = Math.max(0, Math.min(3 * n - 1, next));
+    scrollToIndex(safe);
   };
 
   const onCarouselKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -130,8 +220,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     if (event.key === 'ArrowRight') scroll('right');
   };
 
-  const canScrollLeft = focusedIndex > 0;
-  const canScrollRight = focusedIndex < projects.length - 1;
+  // ── render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="project-carousel">
@@ -147,13 +236,16 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
             style={{ width: edgeInset }}
             aria-hidden
           />
-          {projects.map((project, index) => {
+          {displayItems.map((project, index) => {
             const previewTags = project.tech.slice(0, 4);
             const isFocused = focusedIndex === index;
+            // Each copy gets a unique id to avoid Framer Motion layoutId collisions.
+            const copyIndex = Math.floor(index / n);
+            const cardId = `${copyIndex}-${project.id}`;
 
             return (
               <motion.div
-                key={project.id}
+                key={cardId}
                 ref={(element) => {
                   cardRefs.current[index] = element;
                 }}
@@ -162,10 +254,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                   opacity: isFocused ? 1 : 0.5,
                 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className={cn(
-                  'project-carousel__card',
-                  isFocused && 'is-focused',
-                )}
+                className={cn('project-carousel__card', isFocused && 'is-focused')}
               >
                 {!isFocused ? (
                   <div
@@ -180,7 +269,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                   </div>
                 )}
                 <ExpandableCard
-                  id={project.id}
+                  id={cardId}
                   title={project.title}
                   description={project.description}
                   accentColor={project.color}
@@ -251,18 +340,16 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
         <button
           type="button"
           onClick={() => scroll('left')}
-          disabled={!canScrollLeft}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#0a0a0a] transition-all hover:translate-x-[-2px] disabled:cursor-not-allowed disabled:opacity-30"
-          aria-label="Scroll left"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#0a0a0a] transition-all hover:translate-x-[-2px]"
+          aria-label="Previous project"
         >
           <ChevronLeft size={18} />
         </button>
         <button
           type="button"
           onClick={() => scroll('right')}
-          disabled={!canScrollRight}
-          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#0a0a0a] transition-all hover:translate-x-[2px] disabled:cursor-not-allowed disabled:opacity-30"
-          aria-label="Scroll right"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#0a0a0a] transition-all hover:translate-x-[2px]"
+          aria-label="Next project"
         >
           <ChevronRight size={18} />
         </button>
