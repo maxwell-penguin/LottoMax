@@ -53,27 +53,12 @@ export function ExpandableCardGroup({ children }: { children: ReactNode }) {
 
 export function ExpandableTag({
   label,
-  accentColor,
 }: {
   label: string;
   accentColor?: string;
 }) {
-  const backgroundColor = accentColor
-    ? `color-mix(in srgb, ${accentColor} 12%, #f5f5f5)`
-    : '#e5e5e5';
-
-  const borderColor = accentColor
-    ? `color-mix(in srgb, ${accentColor} 20%, transparent)`
-    : 'transparent';
-
   return (
-    <span
-      className="tech-badge inline-flex h-6 items-center rounded-md px-2.5 text-[0.7rem] font-medium leading-none text-[#525252] transition-all"
-      style={{
-        backgroundColor,
-        border: `1px solid ${borderColor}`,
-      }}
-    >
+    <span className="tech-badge inline-flex h-6 items-center rounded-[6px] px-2.5 text-[0.75rem] font-medium leading-none transition-all" style={{ background: '#EEF4F7', color: '#4A7A91', border: '1px solid #DDE9EF' }}>
       {label}
     </span>
   );
@@ -301,7 +286,7 @@ export function ExpandableCard({
         } as React.CSSProperties}
         className={cn(
           'expandable-card relative flex cursor-pointer flex-col text-left',
-          'rounded-3xl border border-[#e5e5e5] bg-[#f5f5f5] shadow-sm',
+          'rounded-3xl border border-[#EFEFEC] bg-white shadow-sm',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3b82f6]',
           useCardHero && 'overflow-hidden p-0',
           collapsedClassName,
@@ -402,7 +387,7 @@ export function ExpandableCard({
               onClick={(event) => event.stopPropagation()}
               className={cn(
                 'expandable-card__modal relative flex w-full flex-col',
-                'overflow-x-hidden rounded-3xl border border-[#e5e5e5] bg-[#f5f5f5] p-0 shadow-lg',
+                'overflow-x-hidden rounded-3xl border border-[#EFEFEC] bg-white p-0 shadow-lg',
                 useProjectHero
                   ? 'expandable-card__modal--project'
                   : 'max-h-[min(90vh,40rem)] max-w-lg overflow-y-auto',
