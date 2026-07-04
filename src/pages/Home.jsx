@@ -32,6 +32,14 @@ function IconLinkedIn({ size = 18 }) {
   );
 }
 
+function IconX({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.849L2.034 2.25h6.982l4.265 5.638 4.963-5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
 function IconMail({ size = 18 }) {
   return (
     <svg
@@ -356,6 +364,15 @@ function Home({ setShowAudio }) {
               aria-label="LinkedIn"
             >
               <IconLinkedIn size={18} />
+            </a>
+            <a
+              href="https://x.com/wobblbobby"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="portfolio-social__link"
+              aria-label="X (Twitter)"
+            >
+              <IconX size={18} />
             </a>
             <a href={`mailto:${aboutData.email}`} className="portfolio-social__link" aria-label="Email">
               <IconMail size={18} />
