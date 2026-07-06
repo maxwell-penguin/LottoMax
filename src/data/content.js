@@ -9,12 +9,12 @@ export const aboutData = {
   linkedin: "https://www.linkedin.com/in/maxwell-peng-070116246/",
   phone: "(647) 562-2398",
   /** About tab — first line under the name */
-  aboutTagline: "Computer Science at Western University, expected 2029.",
+  aboutTagline: "",
   /** About tab — intro paragraph */
   aboutBio:
     "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on.",
   aboutOpenTo:
-    "Open to internships, collaborations, and good conversations about product, startups, or chess openings.",
+    "Open to collaborations and good conversations about the gym, products, and food!",
   aboutHighlights: [
     "Interned at Autumn: built provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
     "Projects Director at Western Founders Network, running workshops, hackathons, and Demo Day for 700+ members",
