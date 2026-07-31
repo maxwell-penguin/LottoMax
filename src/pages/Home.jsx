@@ -7,6 +7,7 @@ import {
   aboutData,
   photosByYear,
   photosYearOrder,
+  photosMisc,
 } from '../data/content';
 import { ProjectCarousel } from '@/components/ui/project-carousel';
 import { ExperienceTiltCard } from '@/components/ui/experience-tilt-card';
@@ -255,10 +256,13 @@ function ProjectsPanel() {
   );
 }
 
+const GALLERY_MISC = 'misc';
+
 function GalleryPanel() {
   const [selectedYear, setSelectedYear] = useState(photosYearOrder[0]);
 
-  const photos = photosByYear[selectedYear] ?? [];
+  const photos =
+    selectedYear === GALLERY_MISC ? photosMisc : photosByYear[selectedYear] ?? [];
 
   return (
     <div className="tab-panel tab-panel--list tab-panel--gallery">
@@ -276,6 +280,15 @@ function GalleryPanel() {
             {year}
           </button>
         ))}
+        <button
+          type="button"
+          role="tab"
+          aria-selected={selectedYear === GALLERY_MISC}
+          className={`gallery-year-pill${selectedYear === GALLERY_MISC ? ' is-active' : ''}`}
+          onClick={() => setSelectedYear(GALLERY_MISC)}
+        >
+          misc
+        </button>
       </div>
       <AnimatePresence mode="wait">
         <motion.div
@@ -287,7 +300,11 @@ function GalleryPanel() {
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
           {photos.length === 0 ? (
-            <p className="gallery-empty">no photos for {selectedYear} yet.</p>
+            <p className="gallery-empty">
+              {selectedYear === GALLERY_MISC
+                ? 'no misc photos yet.'
+                : `no photos for ${selectedYear} yet.`}
+            </p>
           ) : (
             photos.map((photo, i) => (
               <figure key={photo.id ?? i} className="gallery-item">

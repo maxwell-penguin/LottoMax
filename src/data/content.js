@@ -292,6 +292,9 @@ export const photosByYear = {
   2025: [],
 };
 
+/** Miscellaneous gallery photos that don't belong to a specific year: `{ id?, caption, src? }[]`. */
+export const photosMisc = [];
+
 export const interestsData = [
   "Penny Stocks & Trading",
   "Basketball & Swimming (Regional)",
