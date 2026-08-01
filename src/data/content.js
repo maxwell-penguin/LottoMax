@@ -10,6 +10,8 @@ export const aboutData = {
   phone: "(647) 562-2398",
   /** About tab — first line under the name */
   aboutTagline: "",
+  /** About tab — availability pill next to the "Currently" pill */
+  aboutAvailability: "Open to internships & full-time roles",
   /** About tab — intro paragraph */
   aboutBio:
     "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on.",
@@ -291,6 +293,9 @@ export const photosByYear = {
   2026: [],
   2025: [],
 };
+
+/** Miscellaneous gallery photos that don't belong to a specific year: `{ id?, caption, src? }[]`. */
+export const photosMisc = [];
 
 export const interestsData = [
   "Penny Stocks & Trading",
