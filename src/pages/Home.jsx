@@ -106,10 +106,17 @@ function AboutPanel() {
             <img src="/profile.png" alt="Maxwell Peng" className="about-photo" />
             <AnimatedName text={aboutData.name} />
           </div>
-          <span className="about-pill">
-            <span className="about-pill__dot" aria-hidden />
-            Currently — {current.role} at {current.company}
-          </span>
+          <div className="about-pill-row">
+            <span className="about-pill">
+              <span className="about-pill__dot" aria-hidden />
+              Currently — {current.role} at {current.company}
+            </span>
+            {aboutData.aboutAvailability && (
+              <span className="about-pill about-pill--secondary">
+                {aboutData.aboutAvailability}
+              </span>
+            )}
+          </div>
           <p className="about-tagline">{aboutData.aboutTagline}</p>
           <p className="about-body">{aboutData.aboutBio}</p>
           <p className="about-body">{aboutData.aboutOpenTo}</p>
