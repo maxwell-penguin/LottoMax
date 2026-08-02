@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
 import {
   experienceData,
@@ -16,6 +17,7 @@ import {
   ExpandableCardGroup,
   ExpandableTag,
 } from '@/components/ui/expandable-card';
+import { useTheme } from '@/hooks/use-theme';
 
 function IconGithub({ size = 18 }) {
   return (
@@ -195,7 +197,7 @@ function ExperiencePanel() {
               }
               collapsedContentClassName="experience-card__footer"
               collapsedDescriptionClassName="experience-card__company"
-              collapsedTitleClassName={hasImage ? undefined : 'text-[1.125rem] font-bold leading-tight text-[#0a0a0a]'}
+              collapsedTitleClassName={hasImage ? undefined : 'text-[1.125rem] font-bold leading-tight text-[var(--text-primary)]'}
               collapsedTitleAdornment={
                 hasImage ? undefined : (
                 <span
@@ -381,6 +383,7 @@ function ResumePanel() {
 
 function Home({ setShowAudio }) {
   const [activeTab, setActiveTab] = useState('about');
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
@@ -430,6 +433,14 @@ function Home({ setShowAudio }) {
             <a href={`mailto:${aboutData.email}`} className="portfolio-social__link" aria-label="Email">
               <IconMail size={18} />
             </a>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="portfolio-social__link portfolio-theme-toggle"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </div>
       </header>
