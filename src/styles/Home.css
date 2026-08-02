@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* ── Design tokens ──────────────────────────────────────────────────────── */
 :root {
   --bg:               #F8F7F4;
@@ -14,12 +16,31 @@
   --text-tertiary:    #7A7A74;
   --tag-bg:           #EEF4F7;
   --tag-text:         #4A7A91;
+  --tag-border:       #DDE9EF;
   --card-border:      #EFEFEC;
   --card-shadow:      0 2px 12px rgba(0,0,0,0.06);
   --card-shadow-hover:0 4px 20px rgba(0,0,0,0.10);
   --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Fraunces', Georgia, serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+:root[data-theme="dark"] {
+  --bg:               #1C1B19;
+  --card-bg:          #26241F;
+  --accent:           #E8856A;
+  --accent-forest:    #7FA491;
+  --accent-blue:      #7BA7BC;
+  --accent-green:     #8FAF8F;
+  --text-primary:     #F0EFE9;
+  --text-secondary:   #B8B6AE;
+  --text-tertiary:    #8C8A82;
+  --tag-bg:           #223138;
+  --tag-text:         #8FC1D9;
+  --tag-border:       #2E4750;
+  --card-border:      #38362F;
+  --card-shadow:      0 2px 12px rgba(0,0,0,0.35);
+  --card-shadow-hover:0 4px 20px rgba(0,0,0,0.45);
 }
 
 * {
@@ -35,6 +56,10 @@ html {
   height: 100%;
   background-color: var(--bg);
   color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
@@ -89,6 +114,10 @@ body {
   z-index: 0;
 }
 
+:root[data-theme="dark"] .portfolio-container--tabs::before {
+  opacity: 0.05;
+}
+
 .portfolio-container--tabs > * {
   position: relative;
   z-index: 1;
@@ -135,6 +164,14 @@ body {
 
 .portfolio-social__link:hover {
   color: var(--text-primary);
+}
+
+.portfolio-theme-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
 }
 
 .portfolio-main {
@@ -294,6 +331,11 @@ body {
   animation: none;
 }
 
+:root[data-theme="dark"] .about-pill:not(.about-pill--secondary) {
+  background: #3A2A22;
+  border-color: #5C3F2E;
+}
+
 @keyframes pill-pulse {
   0%, 100% { border-color: rgba(245, 196, 180, 0.6); }
   50% { border-color: rgba(245, 196, 180, 0.3); }
@@ -339,7 +381,7 @@ body {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #6B6B66;
+  color: var(--text-tertiary);
   margin: 0 0 0.75rem;
 }
 
@@ -439,6 +481,11 @@ body {
   background: rgba(248, 247, 244, 0.85);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+:root[data-theme="dark"] .portfolio-bottom-nav {
+  border-top-color: rgba(56, 54, 47, 0.9);
+  background: rgba(28, 27, 25, 0.85);
 }
 
 .portfolio-bottom-nav__tab {
@@ -821,7 +868,7 @@ body {
 .expandable-card__hero {
   position: relative;
   width: 100%;
-  background: #F2EFE9;
+  background: var(--card-border);
 }
 
 .expandable-card__hero--collapsed {
@@ -1100,7 +1147,7 @@ body {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #6B6B66;
+  color: var(--text-tertiary);
   margin-top: 0;
   margin-bottom: 1rem;
 }
@@ -1128,7 +1175,7 @@ body {
 
 .gallery-year-pill.is-active {
   background: var(--text-primary);
-  color: #fff;
+  color: var(--bg);
   border-color: var(--text-primary);
 }
 
@@ -1175,7 +1222,7 @@ body {
 .gallery-item__placeholder {
   width: 100%;
   aspect-ratio: 4 / 3;
-  background: #e5e5e5;
+  background: var(--card-border);
 }
 
 .gallery-item__caption {
@@ -1213,6 +1260,11 @@ body {
   padding: 0 1rem;
   background: #F6F6F4;
   border-bottom: 1px solid #E5E5E0;
+}
+
+:root[data-theme="dark"] .resume-window__titlebar {
+  background: #2E2C26;
+  border-bottom-color: #38362F;
 }
 
 .resume-window__dots {
@@ -1312,6 +1364,12 @@ body {
   background: #4CAF50;
   flex-shrink: 0;
   animation: pulse-dot 2.2s ease-in-out infinite;
+}
+
+:root[data-theme="dark"] .project-live-badge {
+  background: rgba(46, 125, 50, 0.22);
+  border-color: rgba(129, 199, 132, 0.35);
+  color: #81C784;
 }
 
 @keyframes pulse-dot {

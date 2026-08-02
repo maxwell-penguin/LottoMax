@@ -58,7 +58,14 @@ export function ExpandableTag({
   accentColor?: string;
 }) {
   return (
-    <span className="tech-badge inline-flex h-6 items-center rounded-[6px] px-2.5 text-[0.75rem] font-medium leading-none transition-all" style={{ background: '#EEF4F7', color: '#4A7A91', border: '1px solid #DDE9EF' }}>
+    <span
+      className="tech-badge inline-flex h-6 items-center rounded-[6px] px-2.5 text-[0.75rem] font-medium leading-none transition-all"
+      style={{
+        background: 'var(--tag-bg)',
+        color: 'var(--tag-text)',
+        border: '1px solid var(--tag-border)',
+      }}
+    >
       {label}
     </span>
   );
@@ -222,7 +229,7 @@ export function ExpandableCard({
   const collapsedBackgroundStyle =
     accentGradient && !useCardHero
       ? {
-          backgroundImage: `linear-gradient(180deg, color-mix(in srgb, ${accentColor} 8%, #F8F7F4) 0%, #F8F7F4 45%)`,
+          backgroundImage: `linear-gradient(180deg, color-mix(in srgb, ${accentColor} 8%, var(--bg)) 0%, var(--bg) 45%)`,
         }
       : undefined;
 
@@ -239,7 +246,7 @@ export function ExpandableCard({
       <img
         src={image}
         alt=""
-        className="h-24 w-full rounded-lg border border-[#EFEFEC] object-cover"
+        className="h-24 w-full rounded-lg border border-[var(--card-border)] object-cover"
       />
     </motion.div>
   ) : (
@@ -259,7 +266,7 @@ export function ExpandableCard({
       <img
         src={image}
         alt=""
-        className="h-40 w-full rounded-xl border border-[#EFEFEC] object-cover"
+        className="h-40 w-full rounded-xl border border-[var(--card-border)] object-cover"
       />
     </motion.div>
   ) : (
@@ -286,7 +293,7 @@ export function ExpandableCard({
         } as React.CSSProperties}
         className={cn(
           'expandable-card relative flex cursor-pointer flex-col text-left',
-          'rounded-3xl border border-[#EFEFEC] bg-white shadow-sm',
+          'rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-sm',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8856A]',
           useCardHero && 'overflow-hidden p-0',
           collapsedClassName,
@@ -308,7 +315,7 @@ export function ExpandableCard({
                   layoutId={titleLayoutId}
                   className={cn(
                     !collapsedTitleClassName &&
-                      'text-lg font-bold leading-tight text-[#2D2D2A]',
+                      'text-lg font-bold leading-tight text-[var(--text-primary)]',
                     collapsedTitleClassName,
                   )}
                 >
@@ -318,7 +325,7 @@ export function ExpandableCard({
                   layoutId={descLayoutId}
                   className={cn(
                     !collapsedDescriptionClassName &&
-                      'mt-2 line-clamp-2 text-sm leading-snug text-[#5A5A55]',
+                      'mt-2 line-clamp-2 text-sm leading-snug text-[var(--text-secondary)]',
                     collapsedDescriptionClassName,
                   )}
                 >
@@ -332,7 +339,7 @@ export function ExpandableCard({
                 layoutId={titleLayoutId}
                 className={cn(
                   !collapsedTitleClassName &&
-                    'text-lg font-bold leading-tight text-[#2D2D2A]',
+                    'text-lg font-bold leading-tight text-[var(--text-primary)]',
                   collapsedTitleClassName,
                 )}
               >
@@ -342,7 +349,7 @@ export function ExpandableCard({
                 layoutId={descLayoutId}
                 className={cn(
                   !collapsedDescriptionClassName &&
-                    'mt-2 line-clamp-2 text-sm leading-snug text-[#5A5A55]',
+                    'mt-2 line-clamp-2 text-sm leading-snug text-[var(--text-secondary)]',
                   collapsedDescriptionClassName,
                 )}
               >
@@ -362,7 +369,7 @@ export function ExpandableCard({
           ) : null}
           {showExpandAffordance ? (
             <span
-              className="pointer-events-none absolute bottom-4 right-4 z-[1] rounded-full p-1 text-[#5A5A55]"
+              className="pointer-events-none absolute bottom-4 right-4 z-[1] rounded-full p-1 text-[var(--text-secondary)]"
               aria-hidden
             >
               <Plus size={18} />
@@ -387,7 +394,7 @@ export function ExpandableCard({
               onClick={(event) => event.stopPropagation()}
               className={cn(
                 'expandable-card__modal relative flex w-full flex-col',
-                'overflow-x-hidden rounded-3xl border border-[#EFEFEC] bg-white p-0 shadow-lg',
+                'overflow-x-hidden rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] p-0 shadow-lg',
                 useProjectHero
                   ? 'expandable-card__modal--project'
                   : 'max-h-[min(90vh,40rem)] max-w-lg overflow-y-auto',
@@ -396,7 +403,7 @@ export function ExpandableCard({
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute right-4 top-4 z-10 rounded-full p-1 text-[#5A5A55] transition-colors hover:bg-[#EFEFEC] hover:text-[#2D2D2A]"
+                className="absolute right-4 top-4 z-10 rounded-full p-1 text-[var(--text-secondary)] transition-colors hover:bg-[var(--card-border)] hover:text-[var(--text-primary)]"
                 aria-label="Close"
               >
                 <X size={18} />
@@ -437,7 +444,7 @@ export function ExpandableCard({
                 {link ? (
                   <a
                     href={link}
-                    className="expandable-card__modal-link inline-flex items-center gap-1 font-medium text-[#4A6B5D] transition-all hover:translate-x-1 hover:text-[#2D2D2A]"
+                    className="expandable-card__modal-link inline-flex items-center gap-1 font-medium text-[var(--accent-forest)] transition-all hover:translate-x-1 hover:text-[var(--text-primary)]"
                     {...(link !== '#'
                       ? { target: '_blank', rel: 'noopener noreferrer' }
                       : {})}
