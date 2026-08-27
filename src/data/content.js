@@ -17,20 +17,19 @@ export const aboutData = {
     "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on.",
   aboutOpenTo:
     "Open to collaborations and good conversations about the gym, products, and food!",
+  aboutCurrentRole: "Recently working at Resilient Privacy Inc",
   aboutHighlights: [
     "Interned at Autumn: built provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
-    "Projects Director at Western Founders Network, running workshops, hackathons, and Demo Day for 700+ members",
     "Team Canada Junior National Team: badminton, PanAm competitor, ranked #2 U17 in Canada",
     "IB graduate from White Oaks Secondary",
     "Spent a couple months doing UGC content creation",
   ],
   tryNextLabel: "would love to try next:",
   tryNext: [
-    { icon: "⛓️", text: "Blockchain" },
+    { icon: "🔩", text: "Hardware" },
     { icon: "🧠", text: "Machine Learning" },
     { icon: "⛳", text: "Golf" },
     { icon: "⛷️", text: "Skiing" },
-    { icon: "🍔", text: "Food challenge" },
   ],
   intoLabel: "into:",
   into: [

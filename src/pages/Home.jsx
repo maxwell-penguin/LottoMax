@@ -97,7 +97,6 @@ function AnimatedName({ text }) {
 }
 
 function AboutPanel() {
-  const current = experienceData[0];
   const building = aboutData.aboutCurrentlyBuilding;
 
   return (
@@ -111,7 +110,7 @@ function AboutPanel() {
           <div className="about-pill-row">
             <span className="about-pill">
               <span className="about-pill__dot" aria-hidden />
-              Currently — {current.role} at {current.company}
+              {aboutData.aboutCurrentRole}
             </span>
             {aboutData.aboutAvailability && (
               <span className="about-pill about-pill--secondary">
@@ -125,7 +124,7 @@ function AboutPanel() {
         </header>
 
         <section className="about-section">
-          <h2 className="about-label">selected work</h2>
+          <h2 className="about-label">fun facts</h2>
           <ul className="about-list">
             {aboutData.aboutHighlights.map((line, i) => (
               <li key={i}>{line}</li>
