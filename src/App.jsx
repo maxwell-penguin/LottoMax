@@ -10,7 +10,7 @@ function App() {
     <Router>
       <AudioPlayer isVisible={showAudio} />
       <Routes>
-        <Route path="/" element={<Home setShowAudio={setShowAudio} />} />
+        <Route path="/*" element={<Home setShowAudio={setShowAudio} />} />
       </Routes>
     </Router>
   );

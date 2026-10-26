@@ -17,7 +17,6 @@ export const aboutData = {
     "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on.",
   aboutOpenTo:
     "Open to collaborations and good conversations about the gym, products, and food!",
-  aboutCurrentRole: "Recently working at Resilient Privacy Inc",
   aboutHighlights: [
     "Interned at Autumn: built provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
     "Team Canada Junior National Team: badminton, PanAm competitor, ranked #2 U17 in Canada",

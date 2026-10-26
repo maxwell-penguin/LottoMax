@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect, useState } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
 import {
   experienceData,
@@ -62,20 +63,20 @@ function IconMail({ size = 18 }) {
   );
 }
 
-const TABS = [
-  { id: 'about', label: 'about' },
-  { id: 'gallery', label: 'gallery' },
-  { id: 'experience', label: 'experience' },
-  { id: 'projects', label: 'projects' },
-  { id: 'resume', label: 'resume' },
+const SECTIONS = [
+  { path: 'about', label: 'about me', hint: "who i am", Panel: AboutPanel },
+  { path: 'experiences', label: 'experiences', hint: "where i've been", Panel: ExperiencePanel },
+  { path: 'projects', label: 'projects', hint: "what i've built", Panel: ProjectsPanel },
+  { path: 'resume', label: 'resume', hint: 'the formal stuff', Panel: ResumePanel },
+  { path: 'gallery', label: 'gallery', hint: 'some moments', Panel: GalleryPanel },
 ];
 
 const RESUME_URL = '/resume.pdf';
 
 const tabContentVariants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
-  exit: { opacity: 0, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
 };
 
 function AnimatedName({ text }) {
@@ -108,10 +109,6 @@ function AboutPanel() {
             <AnimatedName text={aboutData.name} />
           </div>
           <div className="about-pill-row">
-            <span className="about-pill">
-              <span className="about-pill__dot" aria-hidden />
-              {aboutData.aboutCurrentRole}
-            </span>
             {aboutData.aboutAvailability && (
               <span className="about-pill about-pill--secondary">
                 {aboutData.aboutAvailability}
@@ -381,7 +378,9 @@ function ResumePanel() {
 }
 
 function Home({ setShowAudio }) {
-  const [activeTab, setActiveTab] = useState('about');
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -398,9 +397,11 @@ function Home({ setShowAudio }) {
     >
       <header className="portfolio-top-bar">
         <div className="portfolio-top-bar__inner">
-          <span className="portfolio-wordmark" aria-hidden>
-            Maxwell Peng
-          </span>
+          {section && (
+            <span className="portfolio-wordmark" aria-hidden>
+              Maxwell Peng
+            </span>
+          )}
           <div className="portfolio-social">
             <a
               href={aboutData.github}
@@ -446,85 +447,45 @@ function Home({ setShowAudio }) {
 
       <main className="portfolio-main">
         <AnimatePresence mode="wait">
-          {activeTab === 'about' && (
-            <motion.div
-              key="about"
-              className="portfolio-tab-surface"
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <AboutPanel />
-            </motion.div>
-          )}
-          {activeTab === 'gallery' && (
-            <motion.div
-              key="gallery"
-              className="portfolio-tab-surface"
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <GalleryPanel />
-            </motion.div>
-          )}
-          {activeTab === 'experience' && (
-            <motion.div
-              key="experience"
-              className="portfolio-tab-surface"
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <ExperiencePanel />
-            </motion.div>
-          )}
-          {activeTab === 'projects' && (
-            <motion.div
-              key="projects"
-              className="portfolio-tab-surface"
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <ProjectsPanel />
-            </motion.div>
-          )}
-          {activeTab === 'resume' && (
-            <motion.div
-              key="resume"
-              className="portfolio-tab-surface"
-              variants={tabContentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <ResumePanel />
-            </motion.div>
-          )}
+          <motion.div
+            key={section ? section.path : 'home'}
+            className="portfolio-tab-surface"
+            variants={tabContentVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            {section ? (
+              <section.Panel />
+            ) : (
+              <nav className="landing" aria-label="Sections">
+                <h1 className="landing__name">{aboutData.name}</h1>
+                <ul className="landing__list">
+                  {SECTIONS.map((x) => (
+                    <li key={x.path}>
+                      <Link to={`/${x.path}`} className="landing__tile">
+                        <span className="landing__label">{x.label}</span>
+                        <span className="landing__hint">{x.hint}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+          </motion.div>
         </AnimatePresence>
       </main>
 
-      <nav className="portfolio-bottom-nav" aria-label="Primary">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              className={`portfolio-bottom-nav__tab ${isActive ? 'is-active' : ''}`}
-              onClick={() => setActiveTab(tab.id)}
-              aria-current={isActive ? 'page' : undefined}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </nav>
+      {section && (
+        <button
+          type="button"
+          className="portfolio-back"
+          onClick={() => navigate('/')}
+          aria-label="Back to home"
+        >
+          <ArrowLeft size={18} />
+        </button>
+      )}
     </motion.div>
   );
 }
