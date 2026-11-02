@@ -910,7 +910,7 @@ body {
 }
 
 .expandable-card__hero--collapsed {
-  height: 10.5rem;
+  height: 160px;
 }
 
 .expandable-card__hero--expanded {

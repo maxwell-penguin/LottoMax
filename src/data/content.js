@@ -219,7 +219,7 @@ export const projectsData = [
   },
   {
     id: 2,
-    title: "Western Founders Network Projects Website",
+    title: "WFN Projects Website",
     description: "React website for WFN club featuring dynamic team and member profile pages, creating a centralized platform for 700+ users to explore organizational structure and discover executive responsibilities.",
     tech: ["JavaScript", "React", "HTML", "CSS", "Vite", "React Router"],
     link: "https://github.com/yourusername/wfn-projects",
@@ -232,7 +232,7 @@ export const projectsData = [
   },
   {
     id: 3,
-    title: "DayFlow Chrome Extension",
+    title: "DayFlow",
     description: "Full-featured Chrome extension to improve productivity with website white/blacklisting, focus timers, inactivity dimming, and lock-in modes. Includes usage analytics tracking daily, weekly, and monthly browsing behavior.",
     tech: ["JavaScript", "HTML", "CSS", "Chrome Extensions API"],
     link: "https://chromewebstore.google.com/detail/dayflow/pfoklgkdgoebldeobkgjcfencpjjlokp",

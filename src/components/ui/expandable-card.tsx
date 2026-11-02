@@ -107,6 +107,8 @@ function CardHero({
   expanded: boolean;
   isExperienceBanner?: boolean;
 }) {
+  // No screenshot = no image area; the card just starts with its text.
+  if (!image) return null;
   return (
     <motion.div
       layoutId={layoutId}
