@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import BookCover from '@/components/BookCover';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
@@ -377,11 +378,19 @@ function ResumePanel() {
   );
 }
 
+// Module-level: survives in-app navigation, resets on refresh.
+let coverSeen = false;
+
 function Home({ setShowAudio }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
   const { theme, toggleTheme } = useTheme();
+  const [showCover, setShowCover] = useState(() => !coverSeen && pathname === '/');
+  const openCover = useCallback(() => {
+    coverSeen = true;
+    setShowCover(false);
+  }, []);
 
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
@@ -395,6 +404,7 @@ function Home({ setShowAudio }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: 'easeInOut' }}
     >
+      <AnimatePresence>{showCover && <BookCover onOpen={openCover} />}</AnimatePresence>
       <header className="portfolio-top-bar">
         <div className="portfolio-top-bar__inner">
           {section && (
@@ -459,11 +469,12 @@ function Home({ setShowAudio }) {
               <section.Panel />
             ) : (
               <nav className="landing" aria-label="Sections">
-                <h1 className="landing__name">{aboutData.name}</h1>
+                <h1 className="landing__header">table of contents</h1>
                 <ul className="landing__list">
-                  {SECTIONS.map((x) => (
+                  {SECTIONS.map((x, i) => (
                     <li key={x.path}>
                       <Link to={`/${x.path}`} className="landing__tile">
+                        <span className="landing__num">{String(i + 1).padStart(2, '0')} —</span>
                         <span className="landing__label">{x.label}</span>
                         <span className="landing__hint">{x.hint}</span>
                       </Link>

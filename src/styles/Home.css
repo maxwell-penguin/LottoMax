@@ -2016,3 +2016,87 @@ body {
   }
 
 }
+/* Book cover */
+.cover-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  perspective: 1800px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  transform-origin: left center;
+  background-color: var(--bg);
+  /* paper grain */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.08'/></svg>");
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.05);
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover__frame {
+  position: absolute;
+  inset: clamp(0.75rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--card-border);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.06), 1px 1px 0 rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.cover__center {
+  text-align: center;
+  padding: 0 1.5rem;
+}
+
+.cover__name {
+  font-family: var(--font-display);
+  font-size: clamp(2.75rem, 10vw, 6rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--text-primary);
+}
+
+.cover__sub {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.cover__open {
+  position: absolute;
+  bottom: calc(clamp(0.75rem, 2.5vw, 1.75rem) + 1.5rem);
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Table of contents extras */
+.landing__header {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--text-tertiary);
+  margin-bottom: 2.5rem;
+}
+
+.landing__num {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
