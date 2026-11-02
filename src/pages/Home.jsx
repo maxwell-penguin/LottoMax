@@ -65,11 +65,11 @@ function IconMail({ size = 18 }) {
 }
 
 const SECTIONS = [
-  { path: 'about', label: 'about me', hint: "who i am", Panel: AboutPanel },
-  { path: 'experiences', label: 'experiences', hint: "where i've been", Panel: ExperiencePanel },
-  { path: 'projects', label: 'projects', hint: "what i've built", Panel: ProjectsPanel },
-  { path: 'resume', label: 'resume', hint: 'the formal stuff', Panel: ResumePanel },
-  { path: 'gallery', label: 'gallery', hint: 'some moments', Panel: GalleryPanel },
+  { path: 'about', label: 'About Me', hint: "who i am", Panel: AboutPanel },
+  { path: 'experiences', label: 'Experiences', hint: "where i've been", Panel: ExperiencePanel },
+  { path: 'projects', label: 'Projects', hint: "what i've built", Panel: ProjectsPanel },
+  { path: 'resume', label: 'Resume', hint: 'the formal stuff', Panel: ResumePanel },
+  { path: 'gallery', label: 'Gallery', hint: 'some moments', Panel: GalleryPanel },
 ];
 
 const RESUME_URL = '/resume.pdf';
