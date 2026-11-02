@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
+import { GuestbookPanel } from '@/components/Guestbook';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, LayoutGrid, Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
@@ -71,6 +72,7 @@ const SECTIONS = [
   { path: 'projects', label: 'Projects', hint: "what i've built", Panel: ProjectsPanel },
   { path: 'resume', label: 'Resume', hint: 'the formal stuff', Panel: ResumePanel },
   { path: 'gallery', label: 'Gallery', hint: 'some moments', Panel: GalleryPanel },
+  { path: 'guestbook', label: 'Guestbook', hint: 'sign the book', Panel: GuestbookPanel },
 ];
 
 const RESUME_URL = '/resume.pdf';
@@ -329,14 +331,16 @@ function Home({ setShowAudio }) {
 
   const [dir, setDir] = useState(1);
   const idx = section ? SECTIONS.indexOf(section) : -1;
+  const viaNext = useRef(false); // true only when arriving by a "next page" action
   const go = useCallback(
-    (to, d) => {
+    (to, d, seq = false) => {
+      viaNext.current = seq;
       setDir(d);
       navigate(to);
     },
     [navigate],
   );
-  const goNext = () => go(idx === SECTIONS.length - 1 ? '/' : `/${SECTIONS[idx + 1].path}`, 1);
+  const goNext = () => go(idx === SECTIONS.length - 1 ? '/' : `/${SECTIONS[idx + 1].path}`, 1, true);
   const goPrev = () => go(idx <= 0 ? '/' : `/${SECTIONS[idx - 1].path}`, -1);
   const goToc = () => go('/', -1);
 
@@ -357,6 +361,23 @@ function Home({ setShowAudio }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  // One-time nudge: arrived at Gallery via "next", once per session.
+  const [nudge, setNudge] = useState(false);
+  useEffect(() => {
+    if (section?.path !== 'gallery' || !viaNext.current) return;
+    try { if (sessionStorage.getItem('gb_nudge')) return; } catch { return; }
+    const show = setTimeout(() => {
+      try { sessionStorage.setItem('gb_nudge', '1'); } catch { /* ignore */ }
+      setNudge(true);
+    }, 2000);
+    const hide = setTimeout(() => setNudge(false), 7000);
+    return () => {
+      clearTimeout(show);
+      clearTimeout(hide);
+      setNudge(false);
+    };
+  }, [section?.path]);
 
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
@@ -453,6 +474,22 @@ function Home({ setShowAudio }) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      <AnimatePresence>
+        {nudge && (
+          <motion.div
+            className="gb-toast"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            onClick={() => setNudge(false)}
+          >
+            you've reached the end —{' '}
+            <Link to="/guestbook">sign the book</Link>?
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {section && (
         <>
