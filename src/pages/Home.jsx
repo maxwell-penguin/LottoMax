@@ -75,7 +75,45 @@ const SECTIONS = [
   { path: 'guestbook', label: 'Guestbook', hint: 'sign the book', Panel: GuestbookPanel },
 ];
 
+// Easter egg content. Add a playlist URL to show the "listening to" line.
+const SECRET_PLAYLIST = { label: '', url: '' };
+
+function SecretPanel() {
+  return (
+    <div className="tab-panel gb-page">
+      <div className="gb-card secret-card">
+        <div className="gb-card__tab" aria-hidden />
+        <h2 className="secret-card__title">you found it</h2>
+        <ul className="secret-card__list">
+          {SECRET_PLAYLIST.url && (
+            <li>
+              currently listening to:{' '}
+              <a href={SECRET_PLAYLIST.url} target="_blank" rel="noopener noreferrer">
+                {SECRET_PLAYLIST.label || 'my playlist'}
+              </a>
+            </li>
+          )}
+          <li>chess rating: 1936</li>
+          <li>favorite opening: the Sicilian Defense</li>
+          <li>ask me about: badminton footwork, why Go is underrated, or building things at 2am</li>
+          <li>
+            <a href={`mailto:${aboutData.email}`}>say hi</a>
+          </li>
+        </ul>
+        <p className="secret-card__note">this page isn't in the table of contents. nice find.</p>
+      </div>
+    </div>
+  );
+}
+
 const RESUME_URL = '/resume.pdf';
+
+// Secret page unfolds from the top-right corner (the dog-ear).
+const secretVariants = {
+  initial: { opacity: 0, clipPath: 'circle(0% at 100% 0%)' },
+  animate: { opacity: 1, clipPath: 'circle(150% at 100% 0%)', transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
 
 // dir: 1 = forward (slide left), -1 = backward (slide right)
 const tabContentVariants = {
@@ -321,6 +359,7 @@ let coverSeen = false;
 function Home({ setShowAudio }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isSecret = pathname.replace(/\/+$/, '') === '/secret';
   const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
   const { theme, toggleTheme } = useTheme();
   const [showCover, setShowCover] = useState(() => !coverSeen && pathname === '/');
@@ -445,15 +484,17 @@ function Home({ setShowAudio }) {
       <main className="portfolio-main">
         <AnimatePresence mode="wait" custom={dir}>
           <motion.div
-            key={section ? section.path : 'home'}
+            key={isSecret ? 'secret' : section ? section.path : 'home'}
             custom={dir}
             className="portfolio-tab-surface"
-            variants={tabContentVariants}
+            variants={isSecret ? secretVariants : tabContentVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            {section ? (
+            {isSecret ? (
+              <SecretPanel />
+            ) : section ? (
               <section.Panel />
             ) : (
               <nav className="landing" aria-label="Sections">
@@ -490,6 +531,16 @@ function Home({ setShowAudio }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {!section && !isSecret && !showCover && (
+        <Link to="/secret" className="dog-ear" aria-label="Secret page" />
+      )}
+
+      {isSecret && (
+        <button type="button" className="portfolio-back" onClick={goToc} aria-label="Back to contents">
+          <ArrowLeft size={18} />
+        </button>
+      )}
 
       {section && (
         <>

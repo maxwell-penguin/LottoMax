@@ -2224,3 +2224,40 @@ body {
 }
 
 .portfolio-pager__toc:hover { color: var(--text-primary); }
+
+/* Dog-ear (easter egg trigger) */
+.dog-ear {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(
+    to bottom left,
+    var(--accent) 50%,
+    color-mix(in srgb, var(--bg) 88%, #000) 50%
+  );
+  filter: drop-shadow(-2px 2px 3px rgba(0, 0, 0, 0.18));
+  transform-origin: top right;
+  transition: transform 0.2s ease;
+}
+
+.dog-ear:hover,
+.dog-ear:focus-visible {
+  transform: scale(1.18) rotate(-4deg);
+}
+
+.secret-card__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 1.6rem;
+  text-align: center;
+  margin: 8px 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed #E5DFD2;
+}
+.secret-card__list { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 14px; line-height: 1.5; }
+.secret-card__list a { color: #E8856A; text-decoration: underline; }
+.secret-card__note { margin-top: 22px; font-size: 11px; font-style: italic; text-align: center; color: #8B8070; }
