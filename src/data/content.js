@@ -72,7 +72,7 @@ export const experienceData = [
     role: "Backend Engineering Intern",
     period: "August 2026 – Present",
     color: "#0f766e",
-    image: "/experience/resilient-privacy.svg", // placeholder, swap in real logo
+    image: "/experience/resilient-privacy.png",
     description:
       "Architected Go web scraping pipelines and stakeholder classification engines for privacy compliance outreach.",
     achievements: [
