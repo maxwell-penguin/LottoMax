@@ -39,6 +39,7 @@ export const aboutData = {
     { icon: "💻", text: "Hackathons" },
     { icon: "🍜", text: "Food" },
   ],
+  aboutCurrently: "Backend Engineering Intern at Resilient Privacy",
   aboutCurrentlyBuilding: {
     name: "Dice AI",
     description: "A tax tool for content creators. Plugs into Twitch, YouTube, Stripe, and Patreon and tells you exactly what you owe.",
@@ -66,34 +67,51 @@ export const educationData = {
 
 export const experienceData = [
   {
-    id: 0,
-    company: "Dice AI",
-    role: "Founder",
-    period: "May 2026 – Present",
-    color: "#7c3aed",
-    image: "/experience/dice-ai.png",
+    id: 6,
+    company: "Resilient Privacy",
+    role: "Backend Engineering Intern",
+    period: "August 2026 – Present",
+    color: "#0f766e",
+    image: "/experience/resilient-privacy.svg", // placeholder, swap in real logo
     description:
-      "Built and launched creatordice.com, an AI-powered tax tool for content creators.",
+      "Architected Go web scraping pipelines and stakeholder classification engines for privacy compliance outreach.",
     achievements: [
-      "Engineered a Canadian tax engine covering federal and Ontario income brackets, CPP Tier 1 & 2, and GST/HST registration thresholds",
-      "Integrated Anthropic AI to generate plain-English tax explanations personalized to each user's income and jurisdiction",
-      "Built and shipped the full product solo, from auth and billing to OAuth integrations across 6 platforms",
+      "Built a Go web scraping pipeline detecting technology stacks from company websites via HTML, HTTP headers, and script tag analysis with 13 fingerprint rules",
+      "Designed a stakeholder classification engine with regex-based confidence scoring across 5 role categories, built for independent testability across HubSpot and Salesforce",
+      "Shipped an outreach recommendation engine to production, selecting contact strategy from stakeholder confidence scores and company metadata",
     ],
-    tech: ["Next.js", "Fastify", "TypeScript", "Postgres"],
+    tech: ["Go", "PostgreSQL", "HubSpot", "Salesforce"],
   },
   {
     id: 4,
     company: "Autumn",
     role: "Software Engineer Intern",
-    period: "March 2025 – Present",
+    period: "March 2026 – August 2026",
     color: "#14b8a6",
     image: "/experience/autumn.png",
     description: "Engineering provider onboarding flow and pre-fill system for grief counselors.",
     achievements: [
-      "Engineered a provider onboarding flow (27 screens, 7 steps) in Next.js with Zustand, Prisma/PostgreSQL, and a weighted real-time completion scoring engine for grief counselors to publish SEO-structured profiles on autumn.co",
-      "Built a LinkedIn and website scrape-to-prefill system using Puppeteer with silent failure handling, JWT magic-link resume, and Inngest-scheduled abandonment email sequences to minimize drop-off across a 15–20 minute onboarding flow",
+      "Cut average onboarding time from 20 min to 12 min by building a scrape-to-prefill system with Puppeteer, JWT magic-link resume, and Inngest-scheduled async email pipelines",
+      "Reduced provider drop-off by 40% by engineering a 27-screen onboarding flow in Next.js/TypeScript with Zustand and a weighted real-time completion scoring engine",
+      "Designed and owned the REST API and PostgreSQL data models end-to-end, writing integration tests and shipping through automated CI/CD pipelines",
     ],
     tech: ["Next.js", "Zustand", "Prisma", "PostgreSQL", "Puppeteer", "Inngest", "JWT"],
+  },
+  {
+    id: 0,
+    company: "Dice AI",
+    role: "Cofounder & Software Engineer",
+    period: "May 2025 – June 2026",
+    color: "#7c3aed",
+    image: "/experience/dice-ai.png",
+    description:
+      "Built and launched creatordice.com, an AI-powered tax tool for content creators.",
+    achievements: [
+      "Built the full platform from 0 to 1 in Next.js/PostgreSQL/Redis, designing core data models for a double-entry bookkeeping ledger and OAuth token state",
+      "Shipped 10+ OAuth integrations through a unified connector layer standardizing token refresh, scoping, and rate-limit handling, cutting manual data entry by 90%",
+      "Built an AI contract review pipeline with PII sanitization, structured LLM output validation, and retry logic",
+    ],
+    tech: ["Next.js", "Fastify", "TypeScript", "Postgres"],
   },
   {
     id: 1,
@@ -159,6 +177,32 @@ export const experienceData = [
 
 export const projectsData = [
   {
+    id: 8,
+    title: "SketchStorm Studio",
+    description: "A 6-agent AI pipeline that turns hand-drawn sketches into working React/Tailwind apps in real time, built at the Cerebras x Google DeepMind Hackathon.",
+    tech: ["FastAPI", "WebSockets", "React", "TypeScript", "Docker", "Playwright"],
+    link: "#",
+    color: "#ec4899",
+    highlights: [
+      "Six specialized agents coordinated over WebSockets with structured inter-agent messaging and 15,000+ lines contributed",
+      "Agents include Vision Parser, Architect, Code Forge, Auditor, Accessibility Checker, and Vision Critic, each independently testable",
+      "26 passing tests covering pipeline fault isolation, retry logic, and Playwright visual QA with headless screenshot diffing"
+    ]
+  },
+  {
+    id: 9,
+    title: "Vigil",
+    description: "An open-source SRE reliability toolkit with burn rate alerting, auto-postmortem generation, real-time monitoring, and Python/JS SDKs.",
+    tech: ["Go", "React", "SQLite", "GitHub API", "Python", "JavaScript"],
+    link: "#",
+    color: "#0ea5e9",
+    highlights: [
+      "Two-window burn rate alerting based on the Google SRE Workbook",
+      "Auto-postmortem GitHub Issue generation from incident data",
+      "Real-time monitoring dashboard with Python and JavaScript SDKs for instrumentation"
+    ]
+  },
+  {
     id: 1,
     title: "Interview Royale",
     description: "Real-time multiplayer interview practice platform supporting 10+ concurrent users with WebSocket-based communication, live video/audio streaming at 15 FPS, and OpenAI-powered answer evaluation using STAR method criteria.",
@@ -218,10 +262,10 @@ export const projectsData = [
   },
   {
     id: 5,
-    title: "AgentMax",
+    title: "DealFlow AI",
     description:
-      "Six AI agents that team up to run M&A due diligence and hand you a scored investment memo in under 60 seconds.",
-    tech: ["LangGraph", "GPT-4o", "FastAPI", "Railway"],
+      "Cross-framework 6-agent M&A due diligence pipeline using LangGraph and OpenAI Agents SDK with a Band coordination layer.",
+    tech: ["LangGraph", "OpenAI Agents SDK", "FastAPI", "PostgreSQL", "Docker", "Railway"],
     link: "#",
     color: "#f97316",
     image: "/projects/agentmax.png",

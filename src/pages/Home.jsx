@@ -111,6 +111,7 @@ function AboutPanel() {
             <AnimatedName text={aboutData.name} />
           </div>
           <div className="about-pill-row">
+            <span className="about-pill">{aboutData.aboutCurrently}</span>
             {aboutData.aboutAvailability && (
               <span className="about-pill about-pill--secondary">
                 {aboutData.aboutAvailability}
