@@ -183,6 +183,7 @@ export const projectsData = [
     tech: ["FastAPI", "WebSockets", "React", "TypeScript", "Docker", "Playwright"],
     link: "#",
     color: "#ec4899",
+    image: "/projects/sketchstorm-studio.png",
     highlights: [
       "Six specialized agents coordinated over WebSockets with structured inter-agent messaging and 15,000+ lines contributed",
       "Agents include Vision Parser, Architect, Code Forge, Auditor, Accessibility Checker, and Vision Critic, each independently testable",
@@ -196,6 +197,7 @@ export const projectsData = [
     tech: ["Go", "React", "SQLite", "GitHub API", "Python", "JavaScript"],
     link: "#",
     color: "#0ea5e9",
+    image: "/projects/vigil.png",
     highlights: [
       "Two-window burn rate alerting based on the Google SRE Workbook",
       "Auto-postmortem GitHub Issue generation from incident data",
