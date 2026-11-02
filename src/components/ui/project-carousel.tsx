@@ -112,8 +112,9 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     if (smooth) {
       container.scrollTo({ left: container.scrollLeft + delta, behavior: 'smooth' });
     } else {
-      // Direct assignment is universally instant (no animation) across all browsers.
-      container.scrollLeft += delta;
+      // The viewport has CSS scroll-behavior: smooth, so a plain scrollLeft
+      // assignment would animate; force an instant jump.
+      container.scrollTo({ left: container.scrollLeft + delta, behavior: 'instant' });
     }
   }, []);
 
@@ -139,7 +140,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
         targetCard.getBoundingClientRect().left - fromCard.getBoundingClientRect().left;
 
       isTeleporting.current = true;
-      container.scrollLeft += scrollDelta;
+      container.scrollTo({ left: container.scrollLeft + scrollDelta, behavior: 'instant' });
       setFocusedIndex(targetIndex);
 
       requestAnimationFrame(() => {

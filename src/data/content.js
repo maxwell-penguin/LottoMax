@@ -211,7 +211,6 @@ export const projectsData = [
     tech: ["TypeScript", "Python", "FastAPI", "WebSocket", "OpenAI API"],
     link: "https://interviewroyale.com/",
     color: "#667eea",
-    image: "/projects/interview-royale.png",
     highlights: [
       "RESTful API endpoints with sub-100ms latency",
       "Proximity-based spatial audio with distance attenuation",
@@ -225,7 +224,6 @@ export const projectsData = [
     tech: ["JavaScript", "React", "HTML", "CSS", "Vite", "React Router"],
     link: "https://github.com/yourusername/wfn-projects",
     color: "#4a90e2",
-    image: "/projects/wfn.png",
     highlights: [
       "Reusable React components and structured routing",
       "Collaborative development through GitHub branches",
@@ -240,7 +238,6 @@ export const projectsData = [
     link: "https://chromewebstore.google.com/detail/dayflow/pfoklgkdgoebldeobkgjcfencpjjlokp",
     githubRepo: "https://github.com/thecodemonki/DayFlow",
     color: "#2ecc71",
-    image: "/projects/dayflow.png",
     highlights: [
       "Reduces distractions by 40-60% for users",
       "Data-driven habit insights and streak-based motivation",

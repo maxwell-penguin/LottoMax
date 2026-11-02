@@ -2188,3 +2188,6 @@ body {
   border-radius: 999px;
   color: var(--text-secondary);
 }
+
+/* keep footer text clear of the "+" affordance in the bottom-right corner */
+.project-carousel-card__footer { padding-right: 1.75rem; }
