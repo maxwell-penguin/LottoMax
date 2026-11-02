@@ -13,6 +13,7 @@ import {
   photosMisc,
 } from '../data/content';
 import { ProjectCarousel } from '@/components/ui/project-carousel';
+import { ExperienceCard } from '@/components/ui/experience-card';
 import { ExperienceTiltCard } from '@/components/ui/experience-tilt-card';
 import {
   ExpandableCard,
@@ -171,81 +172,13 @@ function AboutPanel() {
 function ExperiencePanel() {
   return (
     <div className="tab-panel tab-panel--list">
-      <ExpandableCardGroup>
-        <div className="experience-expandable-grid">
-          {experienceData.map((exp) => {
-            const hasImage = Boolean(exp.image);
-
-            return (
-            <ExperienceTiltCard key={exp.id}>
-            <ExpandableCard
-              id={exp.id}
-              title={exp.role}
-              description={exp.company}
-              image={exp.image}
-              accentColor={exp.color}
-              heroStyle={hasImage ? 'experience-banner' : 'accent-bar'}
-              accentGradient={!hasImage}
-              showExpandAffordance
-              collapsedClassName={
-                hasImage
-                  ? 'expandable-card--experience experience-card experience-card--has-image w-full'
-                  : 'expandable-card--experience experience-card w-full'
-              }
-              collapsedContentClassName="experience-card__footer"
-              collapsedDescriptionClassName="experience-card__company"
-              collapsedTitleClassName={hasImage ? undefined : 'text-[1.125rem] font-bold leading-tight text-[var(--text-primary)]'}
-              collapsedTitleAdornment={
-                hasImage ? undefined : (
-                <span
-                  className="experience-card__badge"
-                  style={{ backgroundColor: exp.color }}
-                  aria-hidden
-                >
-                  {exp.company.charAt(0)}
-                </span>
-                )
-              }
-              collapsedContent={
-                <>
-                  <div className="exp-meta expandable-card__meta">
-                    <div className="exp-period">{exp.period}</div>
-                    <div className="exp-location">{exp.location}</div>
-                  </div>
-                  {exp.achievements[0] ? (
-                    <p className="experience-card__teaser">
-                      {exp.achievements[0]}
-                    </p>
-                  ) : null}
-                  <div className="experience-card__tags">
-                    {exp.tech.slice(0, 4).map((tag) => (
-                      <ExpandableTag
-                        key={tag}
-                        label={tag}
-                        accentColor={exp.color}
-                      />
-                    ))}
-                  </div>
-                </>
-              }
-            >
-              <p className="exp-description">{exp.description}</p>
-              <ul className="exp-achievements">
-                {exp.achievements.map((achievement, i) => (
-                  <li key={i}>{achievement}</li>
-                ))}
-              </ul>
-              <div className="exp-tech">
-                {exp.tech.map((tech) => (
-                  <ExpandableTag key={tech} label={tech} accentColor={exp.color} />
-                ))}
-              </div>
-            </ExpandableCard>
-            </ExperienceTiltCard>
-            );
-          })}
-        </div>
-      </ExpandableCardGroup>
+      <div className="experience-expandable-grid">
+        {experienceData.map((exp, i) => (
+          <ExperienceTiltCard key={exp.id}>
+            <ExperienceCard exp={exp} index={i} />
+          </ExperienceTiltCard>
+        ))}
+      </div>
     </div>
   );
 }
