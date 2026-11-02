@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Moon, Sun } from 'lucide-react';
+import { ArrowLeft, ArrowRight, LayoutGrid, Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
 import {
   experienceData,
@@ -75,10 +75,11 @@ const SECTIONS = [
 
 const RESUME_URL = '/resume.pdf';
 
+// dir: 1 = forward (slide left), -1 = backward (slide right)
 const tabContentVariants = {
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+  initial: (dir) => ({ opacity: 0, x: 48 * dir }),
+  animate: { opacity: 1, x: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+  exit: (dir) => ({ opacity: 0, x: -48 * dir, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }),
 };
 
 function AnimatedName({ text }) {
@@ -326,6 +327,37 @@ function Home({ setShowAudio }) {
     setShowCover(false);
   }, []);
 
+  const [dir, setDir] = useState(1);
+  const idx = section ? SECTIONS.indexOf(section) : -1;
+  const go = useCallback(
+    (to, d) => {
+      setDir(d);
+      navigate(to);
+    },
+    [navigate],
+  );
+  const goNext = () => go(idx === SECTIONS.length - 1 ? '/' : `/${SECTIONS[idx + 1].path}`, 1);
+  const goPrev = () => go(idx <= 0 ? '/' : `/${SECTIONS[idx - 1].path}`, -1);
+  const goToc = () => go('/', -1);
+
+  // Latest handlers for the key listener without re-subscribing.
+  const keysRef = useRef({});
+  keysRef.current = { goNext, goPrev, goToc, active: Boolean(section) && !showCover };
+  useEffect(() => {
+    const onKey = (e) => {
+      const k = keysRef.current;
+      if (!k.active || e.metaKey || e.ctrlKey || e.altKey) return;
+      // Leave arrows/Escape to inputs, the project carousel, and open modals.
+      if (e.target.closest?.('input, textarea, .project-carousel__viewport')) return;
+      if (document.querySelector('.xc-overlay, .fixed.inset-0.z-50')) return;
+      if (e.key === 'ArrowRight') k.goNext();
+      else if (e.key === 'ArrowLeft') k.goPrev();
+      else if (e.key === 'Escape') k.goToc();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
   }, [setShowAudio]);
@@ -390,9 +422,10 @@ function Home({ setShowAudio }) {
       </header>
 
       <main className="portfolio-main">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={dir}>
           <motion.div
             key={section ? section.path : 'home'}
+            custom={dir}
             className="portfolio-tab-surface"
             variants={tabContentVariants}
             initial="initial"
@@ -422,14 +455,27 @@ function Home({ setShowAudio }) {
       </main>
 
       {section && (
-        <button
-          type="button"
-          className="portfolio-back"
-          onClick={() => navigate('/')}
-          aria-label="Back to home"
-        >
-          <ArrowLeft size={18} />
-        </button>
+        <>
+          <button type="button" className="portfolio-back" onClick={goPrev} aria-label={idx === 0 ? 'Back to contents' : 'Previous section'}>
+            <ArrowLeft size={18} />
+          </button>
+          <div className="portfolio-pager">
+            <span>
+              {String(idx + 1).padStart(2, '0')} / {String(SECTIONS.length).padStart(2, '0')}
+            </span>
+            <button type="button" className="portfolio-pager__toc" onClick={goToc} aria-label="Table of contents">
+              <LayoutGrid size={14} />
+            </button>
+          </div>
+          <button
+            type="button"
+            className="portfolio-back portfolio-back--next"
+            onClick={goNext}
+            aria-label={idx === SECTIONS.length - 1 ? 'Back to contents' : 'Next section'}
+          >
+            <ArrowRight size={18} />
+          </button>
+        </>
       )}
     </motion.div>
   );

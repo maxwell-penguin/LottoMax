@@ -2191,3 +2191,36 @@ body {
 
 /* keep footer text clear of the "+" affordance in the bottom-right corner */
 .project-carousel-card__footer { padding-right: 1.75rem; }
+
+/* Book-style pager */
+.portfolio-back--next {
+  left: auto;
+  right: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+.portfolio-pager {
+  position: fixed;
+  left: 50%;
+  translate: -50% 0;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.portfolio-pager__toc {
+  display: flex;
+  background: none;
+  border: 0;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: color 0.2s ease;
+}
+
+.portfolio-pager__toc:hover { color: var(--text-primary); }
