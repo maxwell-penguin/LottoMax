@@ -15,7 +15,7 @@ const variants = {
       : { rotateY: -115, opacity: [1, 1, 0], transition: { duration: 0.9, ease } },
 };
 
-export default function BookCover({ onOpen }) {
+export default function BookCover({ onOpen, behind = false }) {
   useEffect(() => {
     let startY = null;
     const onWheel = (e) => e.deltaY > 8 && onOpen();
@@ -35,7 +35,7 @@ export default function BookCover({ onOpen }) {
   }, [onOpen]);
 
   return (
-    <div className="cover-stage">
+    <div className="cover-stage" style={behind ? { zIndex: 90 } : undefined}>
       <motion.div
         className="cover"
         custom={isMobile()}

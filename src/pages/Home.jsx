@@ -353,6 +353,103 @@ function ResumePanel() {
   );
 }
 
+function TopBar({ section, theme, toggleTheme }) {
+  return (
+    <header className="portfolio-top-bar">
+      <div className="portfolio-top-bar__inner">
+        {section && (
+          <span className="portfolio-wordmark" aria-hidden>
+            Maxwell Peng
+          </span>
+        )}
+        <div className="portfolio-social">
+          <a
+            href={aboutData.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="portfolio-social__link"
+            aria-label="GitHub"
+          >
+            <IconGithub size={18} />
+          </a>
+          <a
+            href={aboutData.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="portfolio-social__link"
+            aria-label="LinkedIn"
+          >
+            <IconLinkedIn size={18} />
+          </a>
+          <a
+            href="https://x.com/wobblbobby"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="portfolio-social__link"
+            aria-label="X (Twitter)"
+          >
+            <IconX size={18} />
+          </a>
+          <a href={`mailto:${aboutData.email}`} className="portfolio-social__link" aria-label="Email">
+            <IconMail size={18} />
+          </a>
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="portfolio-social__link portfolio-theme-toggle"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function TocNav() {
+  return (
+    <nav className="landing" aria-label="Sections">
+      <h1 className="landing__header">table of contents</h1>
+      <ul className="landing__list">
+        {SECTIONS.map((x, i) => (
+          <li key={x.path}>
+            <Link to={`/${x.path}`} className="landing__tile">
+              <span className="landing__num">{String(i + 1).padStart(2, '0')} —</span>
+              <span className="landing__label">{x.label}</span>
+              <span className="landing__hint">{x.hint}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+// Page-flip animation: a snapshot of the contents page swings away from `side`.
+function FlipSheet({ side, onDone }) {
+  const left = side === 'left';
+  return (
+    <div className="flip-stage" aria-hidden>
+      <motion.div
+        className="portfolio-container portfolio-container--tabs flip-sheet"
+        style={{ transformOrigin: left ? 'left center' : 'right center' }}
+        initial={{ rotateY: 0, opacity: 1 }}
+        animate={{ rotateY: left ? -110 : 110, opacity: [1, 1, 0] }}
+        transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1] }}
+        onAnimationComplete={onDone}
+      >
+        <TopBar section={null} theme="" toggleTheme={() => {}} />
+        <main className="portfolio-main">
+          <div className="portfolio-tab-surface">
+            <TocNav />
+          </div>
+        </main>
+      </motion.div>
+    </div>
+  );
+}
+
 // Module-level: survives in-app navigation, resets on refresh.
 let coverSeen = false;
 
@@ -369,6 +466,16 @@ function Home({ setShowAudio }) {
   }, []);
 
   const [dir, setDir] = useState(1);
+  const [flip, setFlip] = useState(null); // 'left' | 'right' while a page-flip plays
+  const startFlip = (side) => {
+    setFlip(side);
+    if (side === 'left') {
+      setShowCover(true);
+    } else {
+      setDir(0); // fade only; the flip supplies the motion
+      navigate('/about');
+    }
+  };
   const idx = section ? SECTIONS.indexOf(section) : -1;
   const viaNext = useRef(false); // true only when arriving by a "next page" action
   const go = useCallback(
@@ -430,56 +537,8 @@ function Home({ setShowAudio }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: 'easeInOut' }}
     >
-      <AnimatePresence>{showCover && <BookCover onOpen={openCover} />}</AnimatePresence>
-      <header className="portfolio-top-bar">
-        <div className="portfolio-top-bar__inner">
-          {section && (
-            <span className="portfolio-wordmark" aria-hidden>
-              Maxwell Peng
-            </span>
-          )}
-          <div className="portfolio-social">
-            <a
-              href={aboutData.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="portfolio-social__link"
-              aria-label="GitHub"
-            >
-              <IconGithub size={18} />
-            </a>
-            <a
-              href={aboutData.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="portfolio-social__link"
-              aria-label="LinkedIn"
-            >
-              <IconLinkedIn size={18} />
-            </a>
-            <a
-              href="https://x.com/wobblbobby"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="portfolio-social__link"
-              aria-label="X (Twitter)"
-            >
-              <IconX size={18} />
-            </a>
-            <a href={`mailto:${aboutData.email}`} className="portfolio-social__link" aria-label="Email">
-              <IconMail size={18} />
-            </a>
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="portfolio-social__link portfolio-theme-toggle"
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-        </div>
-      </header>
+      <AnimatePresence>{showCover && <BookCover onOpen={openCover} behind={Boolean(flip)} />}</AnimatePresence>
+      <TopBar section={section} theme={theme} toggleTheme={toggleTheme} />
 
       <main className="portfolio-main">
         <AnimatePresence mode="wait" custom={dir}>
@@ -497,20 +556,7 @@ function Home({ setShowAudio }) {
             ) : section ? (
               <section.Panel />
             ) : (
-              <nav className="landing" aria-label="Sections">
-                <h1 className="landing__header">table of contents</h1>
-                <ul className="landing__list">
-                  {SECTIONS.map((x, i) => (
-                    <li key={x.path}>
-                      <Link to={`/${x.path}`} className="landing__tile">
-                        <span className="landing__num">{String(i + 1).padStart(2, '0')} —</span>
-                        <span className="landing__label">{x.label}</span>
-                        <span className="landing__hint">{x.hint}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
+              <TocNav />
             )}
           </motion.div>
         </AnimatePresence>
@@ -532,7 +578,15 @@ function Home({ setShowAudio }) {
         )}
       </AnimatePresence>
 
-      {!section && !isSecret && !showCover && (
+      {!section && !isSecret && !showCover && !flip && (
+        <>
+          <button type="button" className="flip-zone flip-zone--left" onClick={() => startFlip('left')} tabIndex={-1} aria-hidden />
+          <button type="button" className="flip-zone flip-zone--right" onClick={() => startFlip('right')} tabIndex={-1} aria-hidden />
+        </>
+      )}
+      {flip && <FlipSheet side={flip} onDone={() => setFlip(null)} />}
+
+      {!section && !isSecret && !showCover && !flip && (
         <Link to="/secret" className="dog-ear" aria-label="Secret page" />
       )}
 

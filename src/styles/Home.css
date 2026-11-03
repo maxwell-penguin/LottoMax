@@ -2261,3 +2261,41 @@ body {
 .secret-card__list { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 14px; line-height: 1.5; }
 .secret-card__list a { color: #E8856A; text-decoration: underline; }
 .secret-card__note { margin-top: 22px; font-size: 11px; font-style: italic; text-align: center; color: #8B8070; }
+
+/* Page-flip zones on the contents page (desktop pointer devices only) */
+.flip-zone { display: none; }
+
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
+  .flip-zone {
+    display: block;
+    position: fixed;
+    /* start below the top bar so social icons stay clickable */
+    top: 4rem;
+    bottom: 0;
+    width: 70px;
+    z-index: 4;
+    padding: 0;
+    background: none;
+    border: 0;
+    transition: box-shadow 0.25s ease;
+  }
+  .flip-zone--left { left: 0; cursor: w-resize; }
+  .flip-zone--right { right: 0; cursor: e-resize; }
+  .flip-zone--left:hover { box-shadow: inset 3px 0 8px -3px rgba(0, 0, 0, 0.14); }
+  .flip-zone--right:hover { box-shadow: inset -3px 0 8px -3px rgba(0, 0, 0, 0.14); }
+}
+
+.flip-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  perspective: 1800px;
+  overflow: hidden;
+}
+
+.flip-sheet {
+  position: absolute !important;
+  inset: 0;
+  backface-visibility: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+}
