@@ -14,12 +14,11 @@ export const aboutData = {
   aboutAvailability: "Open to internships & full-time roles",
   /** About tab — intro paragraph */
   aboutBio:
-    "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on.",
+    "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on. Most of all, I love making projects that have a positive impact on communities.",
   aboutOpenTo:
     "Open to collaborations and good conversations about the gym, products, and food!",
   aboutHighlights: [
-    "Interned at Autumn: built provider onboarding flows and a LinkedIn scrape-to-prefill system for grief counselors across Canada",
-    "Team Canada Junior National Team: badminton, PanAm competitor, ranked #2 U17 in Canada",
+    "Team Canada Junior National Team",
     "IB graduate from White Oaks Secondary",
     "Spent a couple months doing UGC content creation",
   ],
