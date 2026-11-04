@@ -2792,3 +2792,26 @@ body {
   mix-blend-mode: multiply;
   opacity: 0.85;
 }
+
+/* ── Claude bot companion ───────────────────────────────────────────────── */
+.claude-bot {
+  position: absolute;
+  right: max(2.75rem, env(safe-area-inset-right, 0px));
+  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  pointer-events: none;
+  color: #d97757;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
+  line-height: 0;
+}
+
+.claude-bot__sprite {
+  display: block;
+  image-rendering: pixelated;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claude-bot {
+    display: none;
+  }
+}

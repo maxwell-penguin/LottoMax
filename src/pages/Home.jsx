@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
+import ClaudeBot from '@/components/ClaudeBot';
 import { GuestbookPanel } from '@/components/Guestbook';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, LayoutGrid, Moon, Sun } from 'lucide-react';
@@ -636,6 +637,11 @@ function Home({ setShowAudio }) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      <ClaudeBot
+        sectionKey={isSecret ? 'secret' : section ? section.path : 'home'}
+        active={!showCover && !flip && !isSecret}
+      />
 
       <AnimatePresence>
         {nudge && (
