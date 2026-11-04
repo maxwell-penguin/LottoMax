@@ -343,23 +343,24 @@ export const interestsData = [
   "Varsity Badminton"
 ];
 // Gallery bookshelves. Photo shelves: drop images in /public/gallery/<shelf>/ and set `image`.
-// A book with no `image` renders as a plain colored spine.
-const placeholders = (labels) => labels.map((label, i) => ({ id: i + 1, label, image: "", caption: "" }));
+// A book with no `image` renders as a plain colored spine. Labels/captions filled in later.
+const placeholders = (count) =>
+  Array.from({ length: count }, (_, i) => ({ id: i + 1, label: "", image: "", caption: "" }));
 
 export const bookshelfData = [
-  { shelf: "travel & adventures", books: placeholders(["tokyo 2025", "banff", "photo 3", "photo 4", "photo 5"]) },
-  { shelf: "team canada", books: placeholders(["panams", "photo 2", "photo 3", "photo 4", "photo 5"]) },
-  { shelf: "hackathons & builds", books: placeholders(["hack the north", "photo 2", "photo 3", "photo 4", "photo 5"]) },
-  { shelf: "food", books: placeholders(["photo 1", "photo 2", "photo 3", "photo 4", "photo 5"]) },
+  { shelf: "travel & adventures", books: placeholders(5) },
+  { shelf: "team canada", books: placeholders(5) },
+  { shelf: "hackathons & builds", books: placeholders(5) },
+  { shelf: "food", books: placeholders(5) },
   {
     shelf: "reading list",
     books: [
-      { id: 1, title: "Placeholder Book", author: "Author Name", color: "#2C4A5C", note: "" },
-      { id: 2, title: "Placeholder Book", author: "Author Name", color: "#4A6B5D", note: "" },
-      { id: 3, title: "Placeholder Book", author: "Author Name", color: "#7A2E3A", note: "" },
-      { id: 4, title: "Placeholder Book", author: "Author Name", color: "#C79A2E", note: "" },
-      { id: 5, title: "Placeholder Book", author: "Author Name", color: "#4B3F72", note: "" },
-      { id: 6, title: "Placeholder Book", author: "Author Name", color: "#3D3830", note: "" },
+      { id: 1, title: "", author: "", color: "#2C4A5C", note: "" },
+      { id: 2, title: "", author: "", color: "#4A6B5D", note: "" },
+      { id: 3, title: "", author: "", color: "#7A2E3A", note: "" },
+      { id: 4, title: "", author: "", color: "#C79A2E", note: "" },
+      { id: 5, title: "", author: "", color: "#4B3F72", note: "" },
+      { id: 6, title: "", author: "", color: "#3D3830", note: "" },
     ],
   },
 ];

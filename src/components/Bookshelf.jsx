@@ -29,9 +29,17 @@ function Spine({ book, shelfIdx, isReading, onOpen }) {
           : undefined,
       }}
       onClick={(e) => onOpen(book, e.currentTarget.getBoundingClientRect())}
-      aria-label={isReading ? `${book.title} by ${book.author}` : book.label}
+      aria-label={
+        isReading
+          ? book.title
+            ? `${book.title}${book.author ? ` by ${book.author}` : ''}`
+            : 'Book'
+          : book.label || 'Photo'
+      }
     >
-      <span className="spine__text">{isReading ? book.title : book.label}</span>
+      {(isReading ? book.title : book.label) ? (
+        <span className="spine__text">{isReading ? book.title : book.label}</span>
+      ) : null}
     </button>
   );
 }
@@ -77,20 +85,20 @@ function OpenBook({ open, onClose }) {
         </button>
         {isReading ? (
           <div className="book-open__reading" style={{ borderLeftColor: book.color }}>
-            <h3 className="book-open__title">{book.title}</h3>
-            <p className="book-open__author">{book.author}</p>
-            {book.note && <p className="book-open__note">{book.note}</p>}
+            {book.title ? <h3 className="book-open__title">{book.title}</h3> : null}
+            {book.author ? <p className="book-open__author">{book.author}</p> : null}
+            {book.note ? <p className="book-open__note">{book.note}</p> : null}
           </div>
         ) : (
           <>
             {book.image ? (
-              <img src={book.image} alt={book.caption || book.label} className="book-open__img" />
+              <img src={book.image} alt={book.caption || book.label || ''} className="book-open__img" />
             ) : (
-              <div className="book-open__img book-open__img--empty">{book.label}</div>
+              <div className="book-open__img book-open__img--empty" />
             )}
-            {(book.caption || book.label) && (
+            {(book.caption || book.label) ? (
               <p className="book-open__caption">{book.caption || book.label}</p>
-            )}
+            ) : null}
           </>
         )}
       </motion.div>
