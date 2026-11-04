@@ -40,10 +40,10 @@ export function useTheme() {
     const kind = next === 'light' ? 'to-light' : 'to-dark';
     setTransition(kind);
 
-    // Dark: flood black first, then flip theme under the veil.
+    // Dark: meteor crash → iris flood → flip theme under the veil.
     // Light: sun blooms, flip mid-bloom so dawn reveals the light UI.
-    const applyAt = next === 'dark' ? 320 : 220;
-    const doneAt = next === 'dark' ? 1200 : 1050;
+    const applyAt = next === 'dark' ? 620 : 220;
+    const doneAt = next === 'dark' ? 1650 : 1050;
 
     window.setTimeout(() => setTheme(next), applyAt);
     window.setTimeout(() => {

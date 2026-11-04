@@ -550,6 +550,9 @@ function Home({ setShowAudio }) {
             </>
           ) : (
             <>
+              <span className="theme-flash__trail" />
+              <span className="theme-flash__meteor" />
+              <span className="theme-flash__impact" />
               <span className="theme-flash__iris" />
               <span className="theme-flash__void" />
             </>
