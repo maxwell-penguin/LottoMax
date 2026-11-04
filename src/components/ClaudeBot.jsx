@@ -2,9 +2,11 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const LINGER_MS = 3200;
-const FLEE_RADIUS = 120;
-const FLEE_STRENGTH = 32;
-const MARGIN = 16;
+const FLEE_RADIUS = 140;
+const BASE_PUSH = 4.5;
+const SPEED_PUSH = 0.045; // extra push from cursor speed (px/ms)
+const MAX_STEP = 11; // hard cap per frame — keeps it from rocketing
+const MARGIN = 12;
 const BOT_W = 36;
 const BOT_H = 32;
 
@@ -36,7 +38,8 @@ function clamp(n, min, max) {
 }
 
 /**
- * Peeks in after a linger, bounces around, and runs away from the cursor.
+ * Peeks in after a linger, bounces around, and skitters away from the cursor
+ * (faster approach → a bit more panic, but always capped).
  */
 export default function ClaudeBot({ sectionKey, active }) {
   const reduce = useReducedMotion();
@@ -47,6 +50,9 @@ export default function ClaudeBot({ sectionKey, active }) {
   const [fleeing, setFleeing] = useState(false);
   const botRef = useRef(null);
   const posRef = useRef(pos);
+  const mouseRef = useRef({ x: 0, y: 0, t: 0 });
+  const rafRef = useRef(0);
+  const pendingRef = useRef(null);
 
   useEffect(() => {
     posRef.current = pos;
@@ -72,7 +78,6 @@ export default function ClaudeBot({ sectionKey, active }) {
       y: h - BOT_H - Math.max(MARGIN, 72),
     });
     setReady(true);
-    // Enable springs only after the first paint at the corner.
     requestAnimationFrame(() => setSettled(true));
   }, []);
 
@@ -85,12 +90,9 @@ export default function ClaudeBot({ sectionKey, active }) {
   useEffect(() => {
     if (!visible || !ready) return undefined;
 
-    const onMove = (e) => {
+    const applyFlee = (mx, my, cursorSpeed) => {
       const root = botRef.current?.offsetParent;
       if (!root) return;
-      const bounds = root.getBoundingClientRect();
-      const mx = e.clientX - bounds.left;
-      const my = e.clientY - bounds.top;
       const { x, y } = posRef.current;
       const cx = x + BOT_W / 2;
       const cy = y + BOT_H / 2;
@@ -104,7 +106,9 @@ export default function ClaudeBot({ sectionKey, active }) {
       }
 
       setFleeing(true);
-      const push = ((FLEE_RADIUS - dist) / FLEE_RADIUS) * FLEE_STRENGTH;
+      // Closer = more push; faster cursor = a little more, then hard-capped.
+      const proximity = (FLEE_RADIUS - dist) / FLEE_RADIUS;
+      const push = Math.min(MAX_STEP, BASE_PUSH * proximity + cursorSpeed * SPEED_PUSH * proximity);
       const nx = dx / dist;
       const ny = dy / dist;
       const maxX = root.clientWidth - BOT_W - MARGIN;
@@ -115,8 +119,32 @@ export default function ClaudeBot({ sectionKey, active }) {
       });
     };
 
+    const onMove = (e) => {
+      const root = botRef.current?.offsetParent;
+      if (!root) return;
+      const bounds = root.getBoundingClientRect();
+      const mx = e.clientX - bounds.left;
+      const my = e.clientY - bounds.top;
+      const now = performance.now();
+      const prev = mouseRef.current;
+      const dt = Math.max(8, now - (prev.t || now));
+      const cursorSpeed = prev.t ? Math.hypot(mx - prev.x, my - prev.y) / dt : 0;
+      mouseRef.current = { x: mx, y: my, t: now };
+
+      pendingRef.current = { mx, my, cursorSpeed };
+      if (rafRef.current) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = 0;
+        const p = pendingRef.current;
+        if (p) applyFlee(p.mx, p.my, p.cursorSpeed);
+      });
+    };
+
     window.addEventListener('pointermove', onMove, { passive: true });
-    return () => window.removeEventListener('pointermove', onMove);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [visible, ready]);
 
   return (
@@ -129,19 +157,19 @@ export default function ClaudeBot({ sectionKey, active }) {
           initial={{ opacity: 0, scale: 0.55, rotate: -8 }}
           animate={{
             opacity: ready ? 1 : 0,
-            scale: fleeing ? 1.06 : 1,
+            scale: fleeing ? 1.04 : 1,
             left: pos.x,
             top: pos.y,
           }}
           exit={{ opacity: 0, scale: 0.7, transition: { duration: 0.2 } }}
           transition={{
             opacity: { duration: 0.3 },
-            scale: { type: 'spring', stiffness: 420, damping: 16 },
+            scale: { type: 'spring', stiffness: 380, damping: 18 },
             left: settled
-              ? { type: 'spring', stiffness: 320, damping: 20, mass: 0.55 }
+              ? { type: 'spring', stiffness: 140, damping: 18, mass: 0.9 }
               : { duration: 0 },
             top: settled
-              ? { type: 'spring', stiffness: 320, damping: 20, mass: 0.55 }
+              ? { type: 'spring', stiffness: 140, damping: 18, mass: 0.9 }
               : { duration: 0 },
           }}
         >
@@ -149,12 +177,12 @@ export default function ClaudeBot({ sectionKey, active }) {
             className="claude-bot__bounce"
             animate={
               fleeing
-                ? { y: [0, -4, 0], rotate: [0, -12, 12, -8, 0] }
+                ? { y: [0, -3, 0], rotate: [0, -10, 10, -6, 0] }
                 : { y: [0, -9, 0, -5, 0], rotate: [0, -5, 4, -2, 0] }
             }
             transition={
               fleeing
-                ? { duration: 0.28, repeat: Infinity, ease: 'easeInOut' }
+                ? { duration: 0.35, repeat: Infinity, ease: 'easeInOut' }
                 : { duration: 3.4, repeat: Infinity, ease: 'easeInOut' }
             }
           >
