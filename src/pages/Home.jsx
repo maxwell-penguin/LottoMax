@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
 import ClaudeBot from '@/components/ClaudeBot';
 import { GuestbookPanel } from '@/components/Guestbook';
+import { GalleryPanel } from '@/components/Bookshelf';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, LayoutGrid, Moon, Sun } from 'lucide-react';
 import '../styles/Home.css';
@@ -10,9 +11,6 @@ import {
   experienceData,
   projectsData,
   aboutData,
-  photosByYear,
-  photosYearOrder,
-  photosMisc,
 } from '../data/content';
 import { ProjectCarousel } from '@/components/ui/project-carousel';
 import { ExperienceCard } from '@/components/ui/experience-card';
@@ -271,80 +269,6 @@ function ProjectsPanel() {
           <ProjectCarousel projects={projectsData} />
         </ExpandableCardGroup>
       </section>
-    </div>
-  );
-}
-
-const GALLERY_MISC = 'misc';
-
-function GalleryPanel() {
-  const [selectedYear, setSelectedYear] = useState(photosYearOrder[0]);
-
-  const photos =
-    selectedYear === GALLERY_MISC ? photosMisc : photosByYear[selectedYear] ?? [];
-
-  return (
-    <div className="tab-panel tab-panel--list tab-panel--gallery">
-      <h2 className="gallery-heading">gallery</h2>
-      <div className="gallery-year-toggle" role="tablist" aria-label="Gallery year">
-        {photosYearOrder.map((year) => (
-          <button
-            key={year}
-            type="button"
-            role="tab"
-            aria-selected={selectedYear === year}
-            className={`gallery-year-pill${selectedYear === year ? ' is-active' : ''}`}
-            onClick={() => setSelectedYear(year)}
-          >
-            {year}
-          </button>
-        ))}
-        <button
-          type="button"
-          role="tab"
-          aria-selected={selectedYear === GALLERY_MISC}
-          className={`gallery-year-pill${selectedYear === GALLERY_MISC ? ' is-active' : ''}`}
-          onClick={() => setSelectedYear(GALLERY_MISC)}
-        >
-          misc
-        </button>
-      </div>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={selectedYear}
-          className="gallery-grid"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {photos.length === 0 ? (
-            <p className="gallery-empty">
-              {selectedYear === GALLERY_MISC
-                ? 'no misc photos yet.'
-                : `no photos for ${selectedYear} yet.`}
-            </p>
-          ) : (
-            photos.map((photo, i) => (
-              <figure key={photo.id ?? i} className="gallery-item">
-                {photo.src ? (
-                  <img
-                    src={photo.src}
-                    alt={photo.caption ?? ''}
-                    className="gallery-item__img"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="gallery-item__placeholder" aria-hidden />
-                )}
-                {photo.caption && (
-                  <figcaption className="gallery-item__caption">{photo.caption}</figcaption>
-                )}
-              </figure>
-            ))
-          )}
-        </motion.div>
-      </AnimatePresence>
     </div>
   );
 }
