@@ -2274,6 +2274,135 @@ body {
   pointer-events: none;
 }
 
+/* Opening intro: flying paper → book → tilt → zoom into cover */
+.cover-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0, 0, 0, 0.06) 0%, transparent 70%),
+    var(--bg);
+}
+
+.cover-intro__space {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+
+.cover-intro__paper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -4.5rem;
+  margin-top: -6rem;
+  border-radius: 2px;
+  background-color: #f3f0e8;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.22  0 0 0 0.85 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.1'/></svg>");
+  border: 1px solid rgba(60, 50, 40, 0.12);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+
+:root[data-theme="dark"] .cover-intro__paper {
+  background-color: #2a2823;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.cover-intro__book {
+  position: absolute;
+  width: min(42vw, 280px);
+  height: min(58vw, 380px);
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+.cover-intro__book-cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px 6px 6px 3px;
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0 0.2  0 0 0 0.9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.08'/></svg>");
+  border: 1px solid var(--card-border);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.cover-intro__book-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.cover-intro__book-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+}
+
+.cover-intro__book-pages {
+  position: absolute;
+  top: 4%;
+  bottom: 4%;
+  right: -7px;
+  width: 7px;
+  border-radius: 0 2px 2px 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ebe6da 0px,
+    #ebe6da 2px,
+    #d9d2c3 2px,
+    #d9d2c3 3px
+  );
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.12);
+}
+
+.cover-intro__book-spine {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 10px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    rgba(0, 0, 0, 0.05) 55%,
+    transparent 100%
+  );
+}
+
+:root[data-theme="dark"] .cover-intro__book-pages {
+  background: repeating-linear-gradient(
+    to bottom,
+    #3a3730 0px,
+    #3a3730 2px,
+    #2a2823 2px,
+    #2a2823 3px
+  );
+}
+
 .cover {
   position: absolute;
   inset: 0;
@@ -2288,6 +2417,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 
 .cover__frame {
