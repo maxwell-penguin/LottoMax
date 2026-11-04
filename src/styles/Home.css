@@ -2794,15 +2794,24 @@ body {
 }
 
 /* ── Claude bot companion ───────────────────────────────────────────────── */
-.claude-bot {
+.portfolio-container--tabs > .claude-bot {
   position: absolute;
-  right: max(2.75rem, env(safe-area-inset-right, 0px));
-  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  left: 0;
+  top: 0;
   z-index: 40;
   pointer-events: none;
   color: #d97757;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12));
   line-height: 0;
+  will-change: left, top, transform;
+}
+
+.portfolio-container--tabs > .claude-bot.claude-bot--fleeing {
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.18));
+}
+
+.claude-bot__bounce {
+  display: block;
 }
 
 .claude-bot__sprite {
@@ -2811,7 +2820,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .claude-bot {
+  .portfolio-container--tabs > .claude-bot {
     display: none;
   }
 }
