@@ -578,10 +578,31 @@ function Home({ setShowAudio }) {
         )}
       </AnimatePresence>
 
-      {!section && !isSecret && !showCover && !flip && (
+      {/*
+        Edge flip zones on every book page (TOC + sections).
+        Book order: TOC (first) → about → … → guestbook (last).
+        First page = forward only; last page = back only; middle = both.
+      */}
+      {!isSecret && !showCover && !flip && (
         <>
-          <button type="button" className="flip-zone flip-zone--left" onClick={() => startFlip('left')} tabIndex={-1} aria-hidden />
-          <button type="button" className="flip-zone flip-zone--right" onClick={() => startFlip('right')} tabIndex={-1} aria-hidden />
+          {section && (
+            <button
+              type="button"
+              className="flip-zone flip-zone--left"
+              onClick={goPrev}
+              tabIndex={-1}
+              aria-hidden
+            />
+          )}
+          {(!section || idx < SECTIONS.length - 1) && (
+            <button
+              type="button"
+              className="flip-zone flip-zone--right"
+              onClick={section ? goNext : () => startFlip('right')}
+              tabIndex={-1}
+              aria-hidden
+            />
+          )}
         </>
       )}
       {flip && <FlipSheet side={flip} onDone={() => setFlip(null)} />}

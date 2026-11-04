@@ -2262,7 +2262,7 @@ body {
 .secret-card__list a { color: #E8856A; text-decoration: underline; }
 .secret-card__note { margin-top: 22px; font-size: 11px; font-style: italic; text-align: center; color: #8B8070; }
 
-/* Page-flip zones on the contents page (desktop pointer devices only) */
+/* Page-flip edge zones on book pages (desktop pointer devices only) */
 .flip-zone { display: none; }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) {
