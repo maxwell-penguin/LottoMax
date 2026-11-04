@@ -2,13 +2,14 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const LINGER_MS = 3200;
-const FLEE_RADIUS = 140;
-const BASE_PUSH = 4.5;
-const SPEED_PUSH = 0.045; // extra push from cursor speed (px/ms)
-const MAX_STEP = 11; // hard cap per frame — keeps it from rocketing
-const MARGIN = 12;
+const FLEE_RADIUS = 130;
+const FLEE_SPEED = 3.2; // constant px per frame — same pace every time
+const MARGIN = 10;
 const BOT_W = 36;
 const BOT_H = 32;
+const OFFSCREEN_CHANCE = 0.012; // rare; checked while pinned against an edge
+const OFFSCREEN_PAD = 56; // how far past the edge it can slip
+const RETURN_MS = 1400;
 
 function ClaudeSprite({ size = 36 }) {
   return (
@@ -38,8 +39,8 @@ function clamp(n, min, max) {
 }
 
 /**
- * Peeks in after a linger, bounces around, and skitters away from the cursor
- * (faster approach → a bit more panic, but always capped).
+ * Lingers in, then skitters away at a steady pace — usually stays on-page,
+ * occasionally slips off an edge before coming back.
  */
 export default function ClaudeBot({ sectionKey, active }) {
   const reduce = useReducedMotion();
@@ -50,9 +51,10 @@ export default function ClaudeBot({ sectionKey, active }) {
   const [fleeing, setFleeing] = useState(false);
   const botRef = useRef(null);
   const posRef = useRef(pos);
-  const mouseRef = useRef({ x: 0, y: 0, t: 0 });
+  const mouseRef = useRef({ x: -9999, y: -9999 });
+  const allowOffRef = useRef(false);
+  const returnTimerRef = useRef(0);
   const rafRef = useRef(0);
-  const pendingRef = useRef(null);
 
   useEffect(() => {
     posRef.current = pos;
@@ -63,6 +65,7 @@ export default function ClaudeBot({ sectionKey, active }) {
     setReady(false);
     setSettled(false);
     setFleeing(false);
+    allowOffRef.current = false;
     if (!active || reduce) return undefined;
     const t = setTimeout(() => setVisible(true), LINGER_MS);
     return () => clearTimeout(t);
@@ -71,11 +74,9 @@ export default function ClaudeBot({ sectionKey, active }) {
   const placeInitial = useCallback(() => {
     const root = botRef.current?.offsetParent;
     if (!root) return;
-    const w = root.clientWidth;
-    const h = root.clientHeight;
     setPos({
-      x: w - BOT_W - Math.max(MARGIN, 44),
-      y: h - BOT_H - Math.max(MARGIN, 72),
+      x: root.clientWidth - BOT_W - Math.max(MARGIN, 44),
+      y: root.clientHeight - BOT_H - Math.max(MARGIN, 72),
     });
     setReady(true);
     requestAnimationFrame(() => setSettled(true));
@@ -90,10 +91,31 @@ export default function ClaudeBot({ sectionKey, active }) {
   useEffect(() => {
     if (!visible || !ready) return undefined;
 
-    const applyFlee = (mx, my, cursorSpeed) => {
+    const boundsFor = (root) => {
+      if (allowOffRef.current) {
+        return {
+          minX: -OFFSCREEN_PAD,
+          maxX: root.clientWidth - BOT_W + OFFSCREEN_PAD,
+          minY: -OFFSCREEN_PAD,
+          maxY: root.clientHeight - BOT_H + OFFSCREEN_PAD,
+        };
+      }
+      return {
+        minX: MARGIN,
+        maxX: root.clientWidth - BOT_W - MARGIN,
+        minY: MARGIN,
+        maxY: root.clientHeight - BOT_H - MARGIN,
+      };
+    };
+
+    const tick = () => {
+      rafRef.current = requestAnimationFrame(tick);
       const root = botRef.current?.offsetParent;
       if (!root) return;
+
       const { x, y } = posRef.current;
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
       const cx = x + BOT_W / 2;
       const cy = y + BOT_H / 2;
       const dx = cx - mx;
@@ -101,49 +123,62 @@ export default function ClaudeBot({ sectionKey, active }) {
       const dist = Math.hypot(dx, dy);
 
       if (dist >= FLEE_RADIUS || dist === 0) {
-        setFleeing(false);
+        setFleeing((f) => (f ? false : f));
         return;
       }
 
       setFleeing(true);
-      // Closer = more push; faster cursor = a little more, then hard-capped.
-      const proximity = (FLEE_RADIUS - dist) / FLEE_RADIUS;
-      const push = Math.min(MAX_STEP, BASE_PUSH * proximity + cursorSpeed * SPEED_PUSH * proximity);
+
+      // Constant-speed escape away from the cursor (any direction).
       const nx = dx / dist;
       const ny = dy / dist;
-      const maxX = root.clientWidth - BOT_W - MARGIN;
-      const maxY = root.clientHeight - BOT_H - MARGIN;
-      setPos({
-        x: clamp(x + nx * push, MARGIN, maxX),
-        y: clamp(y + ny * push, MARGIN, maxY),
-      });
+      let nextX = x + nx * FLEE_SPEED;
+      let nextY = y + ny * FLEE_SPEED;
+
+      const b = boundsFor(root);
+      const hitEdge =
+        nextX <= b.minX || nextX >= b.maxX || nextY <= b.minY || nextY >= b.maxY;
+
+      // Usually stay on-page; rarely open a brief off-screen window.
+      if (hitEdge && !allowOffRef.current && Math.random() < OFFSCREEN_CHANCE) {
+        allowOffRef.current = true;
+        window.clearTimeout(returnTimerRef.current);
+        returnTimerRef.current = window.setTimeout(() => {
+          allowOffRef.current = false;
+          const root2 = botRef.current?.offsetParent;
+          if (!root2) return;
+          setPos((p) => ({
+            x: clamp(p.x, MARGIN, root2.clientWidth - BOT_W - MARGIN),
+            y: clamp(p.y, MARGIN, root2.clientHeight - BOT_H - MARGIN),
+          }));
+        }, RETURN_MS);
+      }
+
+      const lim = boundsFor(root);
+      nextX = clamp(nextX, lim.minX, lim.maxX);
+      nextY = clamp(nextY, lim.minY, lim.maxY);
+
+      if (nextX !== x || nextY !== y) {
+        setPos({ x: nextX, y: nextY });
+      }
     };
 
     const onMove = (e) => {
       const root = botRef.current?.offsetParent;
       if (!root) return;
       const bounds = root.getBoundingClientRect();
-      const mx = e.clientX - bounds.left;
-      const my = e.clientY - bounds.top;
-      const now = performance.now();
-      const prev = mouseRef.current;
-      const dt = Math.max(8, now - (prev.t || now));
-      const cursorSpeed = prev.t ? Math.hypot(mx - prev.x, my - prev.y) / dt : 0;
-      mouseRef.current = { x: mx, y: my, t: now };
-
-      pendingRef.current = { mx, my, cursorSpeed };
-      if (rafRef.current) return;
-      rafRef.current = requestAnimationFrame(() => {
-        rafRef.current = 0;
-        const p = pendingRef.current;
-        if (p) applyFlee(p.mx, p.my, p.cursorSpeed);
-      });
+      mouseRef.current = {
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top,
+      };
     };
 
     window.addEventListener('pointermove', onMove, { passive: true });
+    rafRef.current = requestAnimationFrame(tick);
     return () => {
       window.removeEventListener('pointermove', onMove);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      cancelAnimationFrame(rafRef.current);
+      window.clearTimeout(returnTimerRef.current);
     };
   }, [visible, ready]);
 
@@ -166,10 +201,10 @@ export default function ClaudeBot({ sectionKey, active }) {
             opacity: { duration: 0.3 },
             scale: { type: 'spring', stiffness: 380, damping: 18 },
             left: settled
-              ? { type: 'spring', stiffness: 140, damping: 18, mass: 0.9 }
+              ? { type: 'spring', stiffness: 220, damping: 24, mass: 0.7 }
               : { duration: 0 },
             top: settled
-              ? { type: 'spring', stiffness: 140, damping: 18, mass: 0.9 }
+              ? { type: 'spring', stiffness: 220, damping: 24, mass: 0.7 }
               : { duration: 0 },
           }}
         >
