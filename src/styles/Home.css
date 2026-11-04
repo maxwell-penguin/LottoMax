@@ -123,6 +123,25 @@ body {
   z-index: 1;
 }
 
+/* Book outline — matches .cover__frame on the front cover */
+.portfolio-container--tabs::after {
+  content: '';
+  position: absolute;
+  inset: clamp(0.75rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--card-border);
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.06),
+    1px 1px 0 rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  z-index: 3;
+}
+
+:root[data-theme="dark"] .portfolio-container--tabs::after {
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.35),
+    1px 1px 0 rgba(255, 255, 255, 0.06);
+}
+
 .portfolio-top-bar {
   flex-shrink: 0;
   padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
