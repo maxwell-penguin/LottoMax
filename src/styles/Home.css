@@ -207,9 +207,6 @@ body {
 
 .portfolio-social__link:hover {
   color: var(--text-primary);
-}
-
-.portfolio-social__link:not(.portfolio-theme-toggle):hover {
   animation: social-waddle 0.5s ease-in-out infinite;
 }
 
@@ -239,7 +236,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .portfolio-wordmark:hover .portfolio-wordmark__letter,
-  .portfolio-social__link:not(.portfolio-theme-toggle):hover {
+  .portfolio-social__link:hover {
     animation: none;
   }
 }
