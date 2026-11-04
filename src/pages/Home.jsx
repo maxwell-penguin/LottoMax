@@ -391,12 +391,22 @@ function ResumePanel() {
 }
 
 function TopBar({ section, theme, toggleTheme }) {
+  const wordmark = 'Maxwell Peng';
   return (
     <header className="portfolio-top-bar">
       <div className="portfolio-top-bar__inner">
         {section && (
-          <span className="portfolio-wordmark" aria-hidden>
-            Maxwell Peng
+          <span className="portfolio-wordmark" aria-label="Maxwell Peng">
+            {wordmark.split('').map((char, i) => (
+              <span
+                key={i}
+                className="portfolio-wordmark__letter"
+                style={{ '--i': i }}
+                aria-hidden
+              >
+                {char === ' ' ? '\u00A0' : char}
+              </span>
+            ))}
           </span>
         )}
         <div className="portfolio-social">
