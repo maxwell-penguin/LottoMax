@@ -458,7 +458,7 @@ function Home({ setShowAudio }) {
   const navigate = useNavigate();
   const isSecret = pathname.replace(/\/+$/, '') === '/secret';
   const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, transition: themeFlash } = useTheme();
   const [showCover, setShowCover] = useState(() => !coverSeen && pathname === '/');
   const openCover = useCallback(() => {
     coverSeen = true;
@@ -539,6 +539,23 @@ function Home({ setShowAudio }) {
     >
       <AnimatePresence>{showCover && <BookCover onOpen={openCover} behind={Boolean(flip)} />}</AnimatePresence>
       <TopBar section={section} theme={theme} toggleTheme={toggleTheme} />
+
+      {themeFlash ? (
+        <div className={`theme-flash theme-flash--${themeFlash}`} aria-hidden>
+          {themeFlash === 'to-light' ? (
+            <>
+              <span className="theme-flash__sun" />
+              <span className="theme-flash__rays" />
+              <span className="theme-flash__glow" />
+            </>
+          ) : (
+            <>
+              <span className="theme-flash__iris" />
+              <span className="theme-flash__void" />
+            </>
+          )}
+        </div>
+      ) : null}
 
       <main className="portfolio-main">
         <AnimatePresence mode="wait" custom={dir}>
