@@ -420,6 +420,17 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .theme-flash { display: none; }
+  .portfolio-main {
+    perspective: none !important;
+  }
+  .portfolio-tab-surface {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+  }
+  .flip-sheet {
+    animation: none !important;
+  }
 }
 
 .portfolio-main {
@@ -430,6 +441,10 @@ body {
   padding-right: max(3rem, env(safe-area-inset-right, 0px));
   padding-bottom: 0.5rem;
   padding-left: max(3rem, env(safe-area-inset-left, 0px));
+  perspective: 2000px;
+  perspective-origin: 50% 45%;
+  transform-style: preserve-3d;
+  overflow: hidden;
 }
 
 .portfolio-tab-surface {
@@ -439,7 +454,12 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
-  background: transparent;
+  background: var(--bg);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform, opacity, filter, box-shadow;
+  transform-origin: left center;
 }
 
 .tab-panel {
@@ -2703,5 +2723,24 @@ body {
   position: absolute !important;
   inset: 0;
   backface-visibility: hidden;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+  transform-style: preserve-3d;
+  box-shadow:
+    -18px 0 40px rgba(0, 0, 0, 0.18),
+    18px 0 40px rgba(0, 0, 0, 0.1);
+}
+
+.flip-sheet__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.18) 0%,
+    transparent 18%,
+    transparent 82%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.85;
 }

@@ -115,11 +115,48 @@ const secretVariants = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
 };
 
-// dir: 1 = forward (slide left), -1 = backward (slide right)
+// dir: 1 = forward (turn page left), -1 = backward (turn page right), 0 = fade
+const pageFlipEase = [0.45, 0.05, 0.25, 1];
 const tabContentVariants = {
-  initial: (dir) => ({ opacity: 0, x: 48 * dir }),
-  animate: { opacity: 1, x: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
-  exit: (dir) => ({ opacity: 0, x: -48 * dir, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }),
+  initial: (dir) =>
+    dir === 0
+      ? { opacity: 0, zIndex: 1 }
+      : {
+          opacity: 1,
+          rotateY: dir > 0 ? 88 : -88,
+          transformPerspective: 2000,
+          transformOrigin: dir > 0 ? 'left center' : 'right center',
+          filter: 'brightness(0.88)',
+          boxShadow: dir > 0
+            ? '18px 0 36px rgba(0,0,0,0.22)'
+            : '-18px 0 36px rgba(0,0,0,0.22)',
+          zIndex: 1,
+        },
+  animate: (dir) => ({
+    opacity: 1,
+    rotateY: 0,
+    filter: 'brightness(1)',
+    boxShadow: '0 0 0 rgba(0,0,0,0)',
+    transformPerspective: 2000,
+    transformOrigin: dir >= 0 ? 'left center' : 'right center',
+    zIndex: 1,
+    transition: { duration: 0.78, ease: pageFlipEase },
+  }),
+  exit: (dir) =>
+    dir === 0
+      ? { opacity: 0, zIndex: 2, transition: { duration: 0.25 } }
+      : {
+          opacity: 0.55,
+          rotateY: dir > 0 ? -118 : 118,
+          transformPerspective: 2000,
+          transformOrigin: dir > 0 ? 'left center' : 'right center',
+          filter: 'brightness(0.72)',
+          boxShadow: dir > 0
+            ? '-28px 0 48px rgba(0,0,0,0.28)'
+            : '28px 0 48px rgba(0,0,0,0.28)',
+          zIndex: 3,
+          transition: { duration: 0.72, ease: pageFlipEase },
+        },
 };
 
 function AnimatedName({ text }) {
@@ -426,19 +463,27 @@ function TocNav() {
   );
 }
 
-// Page-flip animation: a snapshot of the contents page swings away from `side`.
+// Page-flip overlay: TOC sheet curls away like turning a real page.
 function FlipSheet({ side, onDone }) {
   const left = side === 'left';
   return (
     <div className="flip-stage" aria-hidden>
       <motion.div
         className="portfolio-container portfolio-container--tabs flip-sheet"
-        style={{ transformOrigin: left ? 'left center' : 'right center' }}
-        initial={{ rotateY: 0, opacity: 1 }}
-        animate={{ rotateY: left ? -110 : 110, opacity: [1, 1, 0] }}
-        transition={{ duration: 0.75, ease: [0.4, 0, 0.2, 1] }}
+        style={{
+          transformOrigin: left ? 'left center' : 'right center',
+          transformPerspective: 1800,
+        }}
+        initial={{ rotateY: 0, opacity: 1, filter: 'brightness(1)' }}
+        animate={{
+          rotateY: left ? -128 : 128,
+          opacity: [1, 1, 0.85, 0],
+          filter: ['brightness(1)', 'brightness(0.95)', 'brightness(0.75)'],
+        }}
+        transition={{ duration: 0.95, ease: pageFlipEase }}
         onAnimationComplete={onDone}
       >
+        <div className="flip-sheet__shade" />
         <TopBar section={null} theme="" toggleTheme={() => {}} />
         <main className="portfolio-main">
           <div className="portfolio-tab-surface">
@@ -561,7 +606,7 @@ function Home({ setShowAudio }) {
       ) : null}
 
       <main className="portfolio-main">
-        <AnimatePresence mode="wait" custom={dir}>
+        <AnimatePresence mode="sync" custom={dir}>
           <motion.div
             key={isSecret ? 'secret' : section ? section.path : 'home'}
             custom={dir}
