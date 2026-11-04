@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
@@ -18,54 +18,62 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-/** Deterministic-ish paper slice seeds (no Math.random on each render). */
+/** Deterministic paper slice seeds. */
 const PAPER_SEEDS = [
-  { x: -62, y: -48, r: -38, rx: 55, ry: -20, delay: 0.02, w: 9.5, h: 13 },
-  { x: 58, y: -42, r: 42, rx: -40, ry: 30, delay: 0.08, w: 8.5, h: 12 },
-  { x: -48, y: 38, r: 28, rx: 25, ry: -45, delay: 0.14, w: 10, h: 14 },
-  { x: 52, y: 44, r: -52, rx: -30, ry: 20, delay: 0.05, w: 9, h: 12.5 },
-  { x: -18, y: -58, r: 18, rx: 60, ry: 10, delay: 0.18, w: 11, h: 15 },
-  { x: 22, y: 55, r: -22, rx: -50, ry: -15, delay: 0.11, w: 8, h: 11 },
-  { x: -70, y: 8, r: 65, rx: 15, ry: 55, delay: 0.22, w: 9.5, h: 13.5 },
-  { x: 68, y: -8, r: -48, rx: -25, ry: -40, delay: 0.16, w: 10.5, h: 14 },
-  { x: -35, y: -28, r: 12, rx: 45, ry: 25, delay: 0.28, w: 8.5, h: 12 },
-  { x: 40, y: 22, r: -15, rx: -35, ry: 35, delay: 0.2, w: 9, h: 13 },
-  { x: -8, y: 48, r: 50, rx: 20, ry: -55, delay: 0.1, w: 10, h: 13.5 },
-  { x: 12, y: -40, r: -60, rx: -55, ry: 15, delay: 0.25, w: 8, h: 11.5 },
-  { x: -55, y: -15, r: 35, rx: 30, ry: -30, delay: 0.32, w: 9.5, h: 12.5 },
-  { x: 48, y: -30, r: -28, rx: -20, ry: 45, delay: 0.06, w: 10, h: 14 },
-  { x: -25, y: 25, r: 8, rx: 40, ry: 20, delay: 0.3, w: 8.5, h: 12 },
-  { x: 30, y: -55, r: -40, rx: -45, ry: -25, delay: 0.12, w: 9, h: 13 },
+  { x: -72, y: -52, r: -48, rx: 70, ry: -35, delay: 0.0, w: 9.5, h: 13 },
+  { x: 68, y: -46, r: 55, rx: -55, ry: 40, delay: 0.1, w: 8.5, h: 12 },
+  { x: -58, y: 46, r: 38, rx: 35, ry: -60, delay: 0.18, w: 10, h: 14 },
+  { x: 62, y: 50, r: -62, rx: -40, ry: 28, delay: 0.06, w: 9, h: 12.5 },
+  { x: -22, y: -68, r: 28, rx: 75, ry: 18, delay: 0.24, w: 11, h: 15 },
+  { x: 28, y: 64, r: -34, rx: -65, ry: -22, delay: 0.14, w: 8, h: 11 },
+  { x: -80, y: 6, r: 78, rx: 20, ry: 70, delay: 0.3, w: 9.5, h: 13.5 },
+  { x: 78, y: -12, r: -58, rx: -32, ry: -52, delay: 0.2, w: 10.5, h: 14 },
+  { x: -42, y: -32, r: 16, rx: 58, ry: 32, delay: 0.36, w: 8.5, h: 12 },
+  { x: 48, y: 28, r: -22, rx: -48, ry: 48, delay: 0.26, w: 9, h: 13 },
+  { x: -12, y: 58, r: 64, rx: 28, ry: -70, delay: 0.12, w: 10, h: 13.5 },
+  { x: 16, y: -48, r: -72, rx: -70, ry: 22, delay: 0.32, w: 8, h: 11.5 },
+  { x: -64, y: -18, r: 44, rx: 42, ry: -38, delay: 0.4, w: 9.5, h: 12.5 },
+  { x: 56, y: -36, r: -36, rx: -28, ry: 58, delay: 0.08, w: 10, h: 14 },
+  { x: -30, y: 32, r: 12, rx: 52, ry: 26, delay: 0.38, w: 8.5, h: 12 },
+  { x: 36, y: -62, r: -50, rx: -58, ry: -30, delay: 0.16, w: 9, h: 13 },
+  { x: -50, y: 18, r: -18, rx: 25, ry: 45, delay: 0.22, w: 10.5, h: 14.5 },
+  { x: 44, y: 12, r: 30, rx: -22, ry: -42, delay: 0.28, w: 8.5, h: 12 },
 ];
 
 /**
- * Intro phases:
- * scatter  — paper slices fly + twirl in
- * assemble — slices gather into a horizontal book
- * tilt     — book tips from flat (facing up) to upright (facing user)
- * zoom     — book comes forward into the full cover
- * ready    — interactive cover (current site start)
+ * scatter → assemble → merge (papers gone, solid book) → tilt → zoom → ready
  */
 export default function BookCover({ onOpen, behind = false }) {
   const [phase, setPhase] = useState(() =>
     prefersReducedMotion() ? 'ready' : 'scatter',
   );
-
+  const timersRef = useRef([]);
   const papers = useMemo(() => PAPER_SEEDS, []);
+
+  const clearTimers = useCallback(() => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+  }, []);
+
+  const skipToCover = useCallback(() => {
+    clearTimers();
+    setPhase('ready');
+  }, [clearTimers]);
 
   useEffect(() => {
     if (prefersReducedMotion()) return undefined;
 
-    const timers = [
-      window.setTimeout(() => setPhase('assemble'), 1600),
-      window.setTimeout(() => setPhase('tilt'), 2800),
-      window.setTimeout(() => setPhase('zoom'), 3800),
-      window.setTimeout(() => setPhase('ready'), 4800),
+    clearTimers();
+    timersRef.current = [
+      window.setTimeout(() => setPhase('assemble'), 2200),
+      window.setTimeout(() => setPhase('merge'), 3800),
+      window.setTimeout(() => setPhase('tilt'), 4600),
+      window.setTimeout(() => setPhase('zoom'), 6200),
+      window.setTimeout(() => setPhase('ready'), 7600),
     ];
-    return () => timers.forEach(clearTimeout);
-  }, []);
+    return clearTimers;
+  }, [clearTimers]);
 
-  // Open interactions only once the cover is ready.
   useEffect(() => {
     if (phase !== 'ready') return undefined;
 
@@ -91,10 +99,12 @@ export default function BookCover({ onOpen, behind = false }) {
   }, [onOpen, phase]);
 
   const showIntro = phase !== 'ready';
+  const showPapers = phase === 'scatter' || phase === 'assemble' || phase === 'merge';
+
   const bookPose =
     phase === 'scatter'
-      ? 'scatter'
-      : phase === 'assemble'
+      ? 'hidden'
+      : phase === 'assemble' || phase === 'merge'
         ? 'flat'
         : phase === 'tilt'
           ? 'upright'
@@ -113,88 +123,119 @@ export default function BookCover({ onOpen, behind = false }) {
             className="cover-intro"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
+            transition={{ duration: 0.45 }}
           >
             <div className="cover-intro__space">
-              {papers.map((p, i) => {
-                const stacked = {
-                  x: ((i % 5) - 2) * 2.5,
-                  y: Math.floor(i / 5) * -1.2 - 2,
-                  rotate: ((i % 3) - 1) * 2.5,
-                  rotateX: 72,
-                  rotateY: ((i % 4) - 1.5) * 3,
-                  scale: 1,
-                };
+              <AnimatePresence>
+                {showPapers &&
+                  papers.map((p, i) => {
+                    const stacked = {
+                      x: ((i % 6) - 2.5) * 1.8,
+                      y: Math.floor(i / 6) * -0.9 - 1,
+                      rotate: ((i % 3) - 1) * 1.5,
+                      rotateX: 74,
+                      rotateY: ((i % 4) - 1.5) * 2,
+                      scale: 0.92,
+                    };
 
-                return (
-                  <motion.span
-                    key={i}
-                    className="cover-intro__paper"
-                    style={{
-                      width: `${p.w}rem`,
-                      height: `${p.h}rem`,
-                      zIndex: i + 1,
-                    }}
-                    initial={{
-                      x: `${p.x}vw`,
-                      y: `${p.y}vh`,
-                      rotate: p.r * 2,
-                      rotateX: p.rx,
-                      rotateY: p.ry,
-                      scale: 0.55,
-                      opacity: 0,
-                    }}
-                    animate={
-                      phase === 'scatter'
-                        ? {
-                            x: [`${p.x}vw`, `${p.x * 0.55}vw`, `${p.x * 0.2}vw`],
-                            y: [`${p.y}vh`, `${p.y * 0.4}vh`, `${p.y * 0.15}vh`],
-                            rotate: [p.r * 2, p.r * -1.2, p.r * 0.4],
-                            rotateX: [p.rx, p.rx * -0.6, p.rx * 0.3],
-                            rotateY: [p.ry, p.ry * -0.8, p.ry * 0.2],
-                            scale: [0.55, 1.05, 0.95],
-                            opacity: [0, 1, 1],
-                          }
-                        : {
-                            x: stacked.x,
-                            y: stacked.y,
-                            rotate: stacked.rotate,
-                            rotateX: stacked.rotateX,
-                            rotateY: stacked.rotateY,
-                            scale: stacked.scale,
-                            opacity: phase === 'zoom' ? 0 : 1,
-                          }
-                    }
-                    transition={
-                      phase === 'scatter'
-                        ? {
-                            duration: 1.45,
-                            delay: p.delay,
-                            ease: [0.22, 1, 0.36, 1],
-                          }
-                        : {
-                            duration: 0.95,
-                            delay: i * 0.018,
-                            ease: [0.34, 1.1, 0.64, 1],
-                          }
-                    }
-                  />
-                );
-              })}
+                    return (
+                      <motion.span
+                        key={i}
+                        className="cover-intro__paper"
+                        style={{
+                          width: `${p.w}rem`,
+                          height: `${p.h}rem`,
+                          zIndex: i + 1,
+                        }}
+                        initial={{
+                          x: `${p.x}vw`,
+                          y: `${p.y}vh`,
+                          rotate: p.r * 2.4,
+                          rotateX: p.rx,
+                          rotateY: p.ry,
+                          scale: 0.4,
+                          opacity: 0,
+                        }}
+                        animate={
+                          phase === 'scatter'
+                            ? {
+                                x: [
+                                  `${p.x}vw`,
+                                  `${p.x * 0.7}vw`,
+                                  `${p.x * -0.15}vw`,
+                                  `${p.x * 0.25}vw`,
+                                ],
+                                y: [
+                                  `${p.y}vh`,
+                                  `${p.y * 0.55}vh`,
+                                  `${p.y * -0.1}vh`,
+                                  `${p.y * 0.2}vh`,
+                                ],
+                                rotate: [p.r * 2.4, p.r * -1.8, p.r * 1.2, p.r * 0.35],
+                                rotateX: [p.rx, p.rx * -0.85, p.rx * 0.5, p.rx * 0.25],
+                                rotateY: [p.ry, p.ry * -1.1, p.ry * 0.6, p.ry * 0.2],
+                                scale: [0.4, 1.15, 0.9, 1],
+                                opacity: [0, 1, 1, 1],
+                              }
+                            : phase === 'assemble'
+                              ? {
+                                  ...stacked,
+                                  opacity: 1,
+                                }
+                              : {
+                                  ...stacked,
+                                  opacity: 0,
+                                  scale: 0.85,
+                                }
+                        }
+                        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.35 } }}
+                        transition={
+                          phase === 'scatter'
+                            ? {
+                                duration: 2.05,
+                                delay: p.delay,
+                                ease: [0.22, 1, 0.36, 1],
+                              }
+                            : phase === 'assemble'
+                              ? {
+                                  duration: 1.25,
+                                  delay: i * 0.022,
+                                  ease: [0.34, 1.05, 0.64, 1],
+                                }
+                              : {
+                                  duration: 0.55,
+                                  delay: i * 0.012,
+                                  ease: [0.4, 0, 0.2, 1],
+                                }
+                        }
+                      />
+                    );
+                  })}
+              </AnimatePresence>
 
               <motion.div
                 className="cover-intro__book"
-                initial={{ opacity: 0, scale: 0.85, rotateX: 78, rotateY: -8, z: -80 }}
+                initial={{ opacity: 0, scale: 0.75, rotateX: 82, rotateY: -10, z: -100 }}
                 animate={
-                  bookPose === 'scatter'
-                    ? { opacity: 0, scale: 0.7, rotateX: 78, rotateY: -8, z: -120 }
+                  bookPose === 'hidden'
+                    ? { opacity: 0, scale: 0.7, rotateX: 82, rotateY: -10, z: -100 }
                     : bookPose === 'flat'
-                      ? { opacity: 1, scale: 0.92, rotateX: 72, rotateY: -6, z: 0 }
+                      ? {
+                          opacity: 1,
+                          scale: phase === 'merge' ? 1 : 0.94,
+                          rotateX: 74,
+                          rotateY: -5,
+                          z: 0,
+                        }
                       : bookPose === 'upright'
-                        ? { opacity: 1, scale: 1, rotateX: 0, rotateY: 0, z: 40 }
-                        : { opacity: 0, scale: 2.4, rotateX: 0, rotateY: 0, z: 280 }
+                        ? { opacity: 1, scale: 1.05, rotateX: 0, rotateY: 0, z: 60 }
+                        : { opacity: 0, scale: 2.6, rotateX: 0, rotateY: 0, z: 320 }
                 }
-                transition={{ duration: bookPose === 'forward' ? 0.95 : 0.9, ease: [0.22, 1, 0.36, 1] }}
+                transition={{
+                  duration:
+                    bookPose === 'forward' ? 1.15 : bookPose === 'upright' ? 1.35 : 0.95,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 <div className="cover-intro__book-cover">
                   <span className="cover-intro__book-title">Maxwell Peng</span>
@@ -204,6 +245,14 @@ export default function BookCover({ onOpen, behind = false }) {
                 <div className="cover-intro__book-spine" aria-hidden />
               </motion.div>
             </div>
+
+            <button
+              type="button"
+              className="cover-intro__skip"
+              onClick={skipToCover}
+            >
+              skip
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -223,13 +272,11 @@ export default function BookCover({ onOpen, behind = false }) {
           pointerEvents: phase === 'ready' ? 'auto' : 'none',
         }}
         animate={
-          phase === 'ready'
+          phase === 'ready' || phase === 'zoom'
             ? { opacity: 1, scale: 1 }
-            : phase === 'zoom'
-              ? { opacity: 1, scale: 1 }
-              : { opacity: 0, scale: 0.92 }
+            : { opacity: 0, scale: 0.92 }
         }
-        transition={{ duration: phase === 'zoom' ? 0.85 : 0.4, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: phase === 'zoom' ? 1.05 : 0.4, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="cover__frame" />
         <div className="cover__center">

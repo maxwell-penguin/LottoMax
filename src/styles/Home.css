@@ -2285,6 +2285,34 @@ body {
     var(--bg);
 }
 
+.cover-intro__skip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(clamp(0.75rem, 2.5vw, 1.75rem) + 1.25rem);
+  transform: translateX(-50%);
+  z-index: 5;
+  pointer-events: auto;
+  appearance: none;
+  border: 1px solid var(--card-border);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.cover-intro__skip:hover {
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+}
+
 .cover-intro__space {
   position: absolute;
   inset: 0;
