@@ -13,8 +13,15 @@ const sizeFor = (shelfIdx, id) => ({
   height: 140 + ((id * 37 + shelfIdx * 11) % 41),
 });
 
+// Stable lean in degrees: mix of left, right, and roughly straight.
+const LEANS = [-5, -4, -3.5, -2.5, -2, 0, 0.5, 2, 2.5, 3.5, 4, 5];
+const leanFor = (shelfIdx, id) => LEANS[(id * 17 + shelfIdx * 13) % LEANS.length];
+
 function Spine({ book, shelfIdx, isReading, onOpen }) {
   const { width, height } = sizeFor(shelfIdx, book.id);
+  const lean = leanFor(shelfIdx, book.id);
+  // Straight books still need a pull direction on hover.
+  const leanSign = lean === 0 ? ((book.id + shelfIdx) % 2 === 0 ? -1 : 1) : Math.sign(lean);
   const bg = isReading ? book.color : SPINES[(book.id + shelfIdx) % SPINES.length];
   return (
     <button
@@ -27,6 +34,8 @@ function Spine({ book, shelfIdx, isReading, onOpen }) {
         backgroundImage: book.image
           ? `linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.5)), url(${book.image})`
           : undefined,
+        '--lean': lean,
+        '--lean-sign': leanSign,
       }}
       onClick={(e) => onOpen(book, e.currentTarget.getBoundingClientRect())}
       aria-label={
