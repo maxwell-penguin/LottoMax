@@ -41,7 +41,42 @@ function pipFor(index: number) {
   return { rank, ...suit };
 }
 
-type DealPhase = 'stacked' | 'spread' | 'gather' | 'ready';
+type DealPhase = 'stacked' | 'spread' | 'hold' | 'gather' | 'ready';
+
+const EASE_DEAL: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const EASE_GATHER: [number, number, number, number] = [0.33, 1, 0.32, 1];
+
+function dealTransition(phase: DealPhase, logical: number, n: number) {
+  const center = Math.floor((n - 1) / 2);
+  const fromCenter = Math.abs(logical - center);
+  // Deal outward from the middle of the hand.
+  const stagger = fromCenter * 0.055;
+
+  if (phase === 'spread') {
+    return {
+      x: { duration: 1.05, ease: EASE_DEAL, delay: 0.08 + stagger },
+      y: { duration: 1.15, ease: EASE_DEAL, delay: 0.08 + stagger },
+      rotate: { duration: 1.1, ease: EASE_DEAL, delay: 0.08 + stagger },
+      scale: { duration: 0.9, ease: EASE_DEAL, delay: 0.08 + stagger },
+      opacity: { duration: 0.45, ease: 'easeOut', delay: stagger * 0.5 },
+    };
+  }
+  if (phase === 'hold') {
+    return { duration: 0.35, ease: 'easeOut' };
+  }
+  if (phase === 'gather') {
+    // Outer cards tuck in first, center last — like closing a fan.
+    const tuck = (n - 1 - fromCenter) * 0.04;
+    return {
+      x: { duration: 0.95, ease: EASE_GATHER, delay: tuck },
+      y: { duration: 1.0, ease: EASE_GATHER, delay: tuck },
+      rotate: { duration: 0.9, ease: EASE_GATHER, delay: tuck },
+      scale: { duration: 0.85, ease: EASE_GATHER, delay: tuck },
+      opacity: { duration: 0.55, ease: 'easeOut', delay: tuck + 0.15 },
+    };
+  }
+  return { duration: 0.35, ease: EASE_DEAL };
+}
 
 export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] }) {
   const n = projects.length;
@@ -64,7 +99,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
   const [edgeInset, setEdgeInset] = useState(16);
   const [phase, setPhase] = useState<DealPhase>('stacked');
   const dealing = phase !== 'ready';
-  const fanning = phase === 'stacked' || phase === 'spread';
+  const fanning = phase === 'stacked' || phase === 'spread' || phase === 'hold';
 
   const updateFocusedCard = useCallback(() => {
     if (isTeleporting.current || dealing) return;
@@ -200,7 +235,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     updateLayout,
   ]);
 
-  // Casino deal: stack → fan spread → gather → ready
+  // Casino deal: stack → fan → hold → gather → ready
   useEffect(() => {
     const reduce =
       typeof window !== 'undefined' &&
@@ -211,16 +246,18 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     }
 
     setPhase('stacked');
-    const tFan = window.setTimeout(() => setPhase('spread'), 80);
-    const tGather = window.setTimeout(() => setPhase('gather'), 980);
+    const tFan = window.setTimeout(() => setPhase('spread'), 120);
+    const tHold = window.setTimeout(() => setPhase('hold'), 1500);
+    const tGather = window.setTimeout(() => setPhase('gather'), 2100);
     const tReady = window.setTimeout(() => {
       setPhase('ready');
       scrollToIndex(n, false);
       setFocusedIndex(n);
-    }, 1680);
+    }, 3200);
 
     return () => {
       window.clearTimeout(tFan);
+      window.clearTimeout(tHold);
       window.clearTimeout(tGather);
       window.clearTimeout(tReady);
     };
@@ -244,29 +281,34 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     const logical = index % n;
     // Fan only the middle copy; outer copies stay hidden until ready.
     if (copyIndex !== 1 && phase !== 'ready') {
-      return { x: 0, y: 0, rotate: 0, scale: 0.9, opacity: 0, zIndex: 0 };
+      return { x: 0, y: 0, rotate: 0, scale: 0.92, opacity: 0, zIndex: 0 };
     }
 
     const centerLogical = Math.floor((n - 1) / 2);
     const offset = logical - centerLogical;
     const abs = Math.abs(offset);
+    // Arc fan: angle fans from center; y dips into an ellipse like a real hand.
+    const maxAngle = Math.min(11, 72 / Math.max(n - 1, 1));
+    const fanRotate = offset * maxAngle;
+    const fanX = offset * (48 + Math.min(18, 140 / Math.max(n, 1)));
+    const fanY = 6 + abs * abs * 2.2;
 
     if (phase === 'stacked') {
       return {
-        x: offset * 2,
-        y: abs * 0.5,
-        rotate: offset * 0.6,
-        scale: 0.96,
+        x: offset * 1.2,
+        y: abs * 0.35,
+        rotate: offset * 0.35,
+        scale: 0.94,
         opacity: 1,
         zIndex: 20 + (n - abs),
       };
     }
-    if (phase === 'spread') {
+    if (phase === 'spread' || phase === 'hold') {
       return {
-        x: offset * 58,
-        y: 8 + abs * 12,
-        rotate: offset * 8,
-        scale: 1,
+        x: fanX,
+        y: fanY,
+        rotate: fanRotate,
+        scale: 1.02 - abs * 0.012,
         opacity: 1,
         zIndex: 20 + (n - abs),
       };
@@ -320,31 +362,18 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                 ref={(element) => {
                   cardRefs.current[index] = element;
                 }}
+                initial={false}
                 animate={motionState}
-                transition={
-                  phase === 'spread'
-                    ? {
-                        type: 'spring',
-                        stiffness: 150,
-                        damping: 15,
-                        mass: 0.85,
-                        delay: Math.abs((index % n) - Math.floor((n - 1) / 2)) * 0.03,
-                      }
-                    : phase === 'gather'
-                      ? {
-                          type: 'spring',
-                          stiffness: 210,
-                          damping: 22,
-                          delay: Math.abs((index % n) - Math.floor((n - 1) / 2)) * 0.02,
-                        }
-                      : { duration: 0.28, ease: 'easeOut' }
-                }
+                transition={dealTransition(phase, logicalIndex, n)}
                 className={cn(
                   'project-carousel__card poker-card-wrap',
                   isFocused && 'is-focused',
                   dealing && 'poker-card-wrap--dealing',
                 )}
-                style={{ zIndex: motionState.zIndex }}
+                style={{
+                  zIndex: motionState.zIndex,
+                  transformOrigin: '50% 100%',
+                }}
               >
                 {!isFocused && phase === 'ready' ? (
                   <div className="pointer-events-none absolute inset-0 z-10 rounded-[1.1rem] bg-black/10" aria-hidden />
