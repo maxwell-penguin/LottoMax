@@ -4,8 +4,8 @@ import { X } from 'lucide-react';
 import { bookshelfData } from '@/data/content';
 import '../styles/Bookshelf.css';
 
-// Muted spine colors for photo books without a thumbnail yet.
-const SPINES = ['#6F93A8', '#7E9C7E', '#B0A07E', '#8F8A80', '#A07F6B'];
+// Spine colors tuned to the site's warm paper palette.
+const SPINES = ['#3D5A6C', '#4F6F52', '#8B6914', '#6B4F3A', '#5C4A6E', '#7A3E3E'];
 
 // Deterministic "natural" size variation, so books don't reshuffle on re-render.
 const sizeFor = (shelfIdx, id) => ({
@@ -125,7 +125,7 @@ export function GalleryPanel() {
           const isReading = shelf.shelf === 'reading list';
           return (
             <section key={shelf.shelf} className="shelf">
-              <span className="shelf__label">{shelf.shelf}</span>
+              <h2 className="shelf__label">{shelf.shelf}</h2>
               <div className="shelf__books">
                 {shelf.books.map((book) => (
                   <Spine
