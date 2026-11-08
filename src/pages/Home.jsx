@@ -315,6 +315,12 @@ function ResumePanel() {
   );
 }
 
+const THEME_LABEL = {
+  light: 'Switch to dark mode',
+  dark: 'Hollow Purple',
+  purple: 'Switch to light mode',
+};
+
 function TopBar({ section, theme, toggleTheme }) {
   const wordmark = 'Maxwell Peng';
   return (
@@ -369,9 +375,11 @@ function TopBar({ section, theme, toggleTheme }) {
             type="button"
             onClick={toggleTheme}
             className="portfolio-social__link portfolio-theme-toggle"
-            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={THEME_LABEL[theme]}
+            title={theme === 'dark' ? 'Hollow Purple' : undefined}
           >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {/* shows the theme you'll get next: light -> moon, dark -> orb, purple -> sun */}
+            {theme === 'light' ? <Moon size={18} /> : theme === 'dark' ? <span className="theme-orb" /> : <Sun size={18} />}
           </button>
         </div>
       </div>
@@ -520,15 +528,18 @@ function Home({ setShowAudio }) {
       <AnimatePresence>{showCover && <BookCover onOpen={openCover} behind={Boolean(flip)} />}</AnimatePresence>
       <TopBar section={section} theme={theme} toggleTheme={toggleTheme} />
 
+      {theme === 'purple' && <div className="purple-field" aria-hidden><i className="purple-field__orb purple-field__orb--red" /><i className="purple-field__orb purple-field__orb--blue" /><i className="purple-field__core" /></div>}
+
       {themeFlash ? (
         <div className={`theme-flash theme-flash--${themeFlash}`} aria-hidden>
-          {themeFlash === 'to-light' ? (
+          {themeFlash === 'to-purple' ? (
             <>
-              <span className="theme-flash__sun" />
-              <span className="theme-flash__rays" />
-              <span className="theme-flash__glow" />
+              <span className="tp-orb tp-orb--red" />
+              <span className="tp-orb tp-orb--blue" />
+              <span className="tp-flash" />
+              <span className="tp-wave" />
             </>
-          ) : (
+          ) : themeFlash === 'to-dark' ? (
             <>
               <span className="theme-flash__trail" />
               <span className="theme-flash__meteor" />
@@ -536,7 +547,7 @@ function Home({ setShowAudio }) {
               <span className="theme-flash__iris" />
               <span className="theme-flash__void" />
             </>
-          )}
+          ) : null}
         </div>
       ) : null}
 
