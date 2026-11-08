@@ -3017,3 +3017,81 @@ body {
     display: none;
   }
 }
+
+/* ── Dealt hand ──────────────────────────────────────────────────────────── */
+.hand {
+  position: relative;
+  width: 100%;
+  height: 33rem;
+  overflow: visible;
+  outline: none;
+}
+
+.hand__card,
+.hand__edge,
+.hand__deck-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 3rem;
+  width: 17.5rem;
+  margin-left: -8.75rem;
+}
+
+.hand__card {
+  height: 26rem;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.hand__edge {
+  height: 26rem;
+  border-radius: 1.05rem;
+  background: #e8dcc4;
+  border: 1px solid #c4a574;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hand__deck-btn {
+  height: 26rem;
+  z-index: 300;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.hand__back {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  border-radius: 1.05rem;
+  border: 1px solid #c4a574;
+  background:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.07) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.07) 75%) 0 0 / 22px 22px,
+    linear-gradient(135deg, #c26a50, #a9503a);
+  box-shadow: inset 0 0 0 8px #fffdf8, inset 0 0 0 9px #c4a574, 0 14px 30px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+.hand__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: rgba(245, 230, 200, 0.85);
+  pointer-events: none;
+}
+
+.hand__card.is-focused .poker-card:hover {
+  box-shadow:
+    inset 0 0 0 3px #fffdf8,
+    inset 0 0 0 4px #c4a574,
+    0 14px 32px rgba(0, 0, 0, 0.38) !important;
+}
+
+@media (max-width: 640px) {
+  .hand { height: 31rem; }
+}

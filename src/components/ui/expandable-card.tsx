@@ -7,6 +7,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, type HTMLMotionProps } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
 import { useOutsideClick } from '@/hooks/use-outside-click';
@@ -380,6 +381,8 @@ export function ExpandableCard({
         </div>
       </motion.button>
 
+      {/* Portaled: transformed ancestors (e.g. the dealt hand) would break position:fixed. */}
+      {createPortal(
       <AnimatePresence>
         {isActive ? (
           <motion.div
@@ -463,7 +466,9 @@ export function ExpandableCard({
             </motion.div>
           </motion.div>
         ) : null}
-      </AnimatePresence>
+      </AnimatePresence>,
+      document.body,
+      )}
     </>
   );
 }
