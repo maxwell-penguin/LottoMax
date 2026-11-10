@@ -548,7 +548,6 @@ function Home({ setShowAudio }) {
                   <KoiFish variant="light" />
                 </span>
               </span>
-              <span className="tl-yinyang" />
               <span className="tl-bloom" />
             </>
           ) : themeFlash === 'to-purple' ? (
