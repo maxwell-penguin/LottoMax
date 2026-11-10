@@ -58,10 +58,10 @@ export function useTheme() {
       applyAt = 2900;
       doneAt = 3800;
     } else if (next === 'purple') {
-      // Orbs converge (0-700ms), white-hot flash, theme flips under it, violet wave (to ~1.35s).
+      // Red grows → blue grows → fuse purple → screen explode.
       kind = 'to-purple';
-      applyAt = 780;
-      doneAt = 1400;
+      applyAt = 1550;
+      doneAt = 2400;
     } else {
       // light -> dark: existing meteor + iris sequence.
       kind = 'to-dark';

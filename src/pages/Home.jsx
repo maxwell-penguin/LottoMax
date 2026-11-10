@@ -570,6 +570,7 @@ function Home({ setShowAudio }) {
             <>
               <span className="tp-orb tp-orb--red" />
               <span className="tp-orb tp-orb--blue" />
+              <span className="tp-fuse" />
               <span className="tp-flash" />
               <span className="tp-wave" />
             </>
