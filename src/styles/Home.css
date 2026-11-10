@@ -254,7 +254,7 @@ body {
   overflow: hidden;
 }
 
-/* Light mode: koi from top-right + bottom-right → swim/wiggle → circle → yin-yang */
+/* Light mode: koi from left + right → swim/wiggle → circle → yin-yang */
 .theme-flash--to-light {
   background: transparent;
 }
@@ -306,10 +306,10 @@ body {
 }
 
 .theme-flash--to-light .tl-koi-slot--top {
-  animation: tl-swim-top 4.4s cubic-bezier(0.45, 0.08, 0.25, 1) forwards;
+  animation: tl-swim-left 4.4s cubic-bezier(0.45, 0.08, 0.25, 1) forwards;
 }
 .theme-flash--to-light .tl-koi-slot--bottom {
-  animation: tl-swim-bottom 4.4s cubic-bezier(0.45, 0.08, 0.25, 1) forwards;
+  animation: tl-swim-right 4.4s cubic-bezier(0.45, 0.08, 0.25, 1) forwards;
 }
 
 .theme-flash--to-light .tl-koi {
@@ -432,22 +432,22 @@ body {
   50% { transform: rotate(8deg) scaleY(1.06); }
 }
 
-/* Top-right → center (with swimming S-path) */
-@keyframes tl-swim-top {
+/* Left side → center (facing right, swimming in) */
+@keyframes tl-swim-left {
   0% {
     opacity: 0;
-    transform: translate(46vw, -40vh) rotate(-20deg) scale(0.5);
+    transform: translate(-52vw, -6vh) rotate(0deg) scale(0.5);
   }
   5% { opacity: 1; }
   12% {
     opacity: 1;
-    transform: translate(32vw, -28vh) rotate(-8deg) scale(0.62);
+    transform: translate(-36vw, 4vh) rotate(8deg) scale(0.62);
   }
   20% {
-    transform: translate(22vw, -16vh) rotate(10deg) scale(0.74);
+    transform: translate(-22vw, -5vh) rotate(-10deg) scale(0.74);
   }
   28% {
-    transform: translate(12vw, -8vh) rotate(-6deg) scale(0.86);
+    transform: translate(-10vw, 3vh) rotate(6deg) scale(0.86);
   }
   36% {
     opacity: 1;
@@ -468,22 +468,22 @@ body {
   }
 }
 
-/* Bottom-right → center (with swimming S-path), settles as opposite yin-yang half */
-@keyframes tl-swim-bottom {
+/* Right side → center (facing left, opposite yin-yang half) */
+@keyframes tl-swim-right {
   0% {
     opacity: 0;
-    transform: translate(46vw, 40vh) rotate(200deg) scale(0.5);
+    transform: translate(52vw, 6vh) rotate(180deg) scale(0.5);
   }
   5% { opacity: 1; }
   12% {
     opacity: 1;
-    transform: translate(32vw, 28vh) rotate(188deg) scale(0.62);
+    transform: translate(36vw, -4vh) rotate(172deg) scale(0.62);
   }
   20% {
-    transform: translate(22vw, 16vh) rotate(170deg) scale(0.74);
+    transform: translate(22vw, 5vh) rotate(190deg) scale(0.74);
   }
   28% {
-    transform: translate(12vw, 8vh) rotate(186deg) scale(0.86);
+    transform: translate(10vw, -3vh) rotate(174deg) scale(0.86);
   }
   36% {
     opacity: 1;

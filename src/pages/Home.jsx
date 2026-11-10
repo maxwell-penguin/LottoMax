@@ -539,6 +539,7 @@ function Home({ setShowAudio }) {
               <span className="tl-ripple tl-ripple--b" />
               <span className="tl-orbit">
                 <span className="tl-koi-slot tl-koi-slot--top" aria-hidden>
+                  {/* dark koi enters from the left */}
                   <span className="tl-koi tl-koi--dark">
                     <svg viewBox="0 0 200 200" className="tl-koi__svg">
                       <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
@@ -553,6 +554,7 @@ function Home({ setShowAudio }) {
                   </span>
                 </span>
                 <span className="tl-koi-slot tl-koi-slot--bottom" aria-hidden>
+                  {/* light koi enters from the right */}
                   <span className="tl-koi tl-koi--light">
                     <svg viewBox="0 0 200 200" className="tl-koi__svg">
                       <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
