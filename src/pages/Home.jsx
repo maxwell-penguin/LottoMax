@@ -532,7 +532,17 @@ function Home({ setShowAudio }) {
 
       {themeFlash ? (
         <div className={`theme-flash theme-flash--${themeFlash}`} aria-hidden>
-          {themeFlash === 'to-purple' ? (
+          {themeFlash === 'to-light' ? (
+            <>
+              <span className="tl-wash" />
+              <span className="tl-orbit">
+                <span className="tl-fish tl-fish--dark" />
+                <span className="tl-fish tl-fish--light" />
+              </span>
+              <span className="tl-yinyang" />
+              <span className="tl-bloom" />
+            </>
+          ) : themeFlash === 'to-purple' ? (
             <>
               <span className="tp-orb tp-orb--red" />
               <span className="tp-orb tp-orb--blue" />

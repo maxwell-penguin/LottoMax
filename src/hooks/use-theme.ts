@@ -4,6 +4,7 @@ export type Theme = 'light' | 'dark' | 'purple';
 export type ThemeTransition =
   | 'to-dark'
   | 'to-purple'
+  | 'to-light'
   | 'fade-light'
   | 'fade-dark'
   | 'fade-purple'
@@ -47,11 +48,15 @@ export function useTheme() {
     let applyAt: number;
     let doneAt: number;
 
-    if (prefersReducedMotion() || theme === 'purple') {
-      // Leaving purple (or reduced motion): quick ~300ms crossfade, no orb sequence.
+    if (prefersReducedMotion()) {
       kind = `fade-${next}`;
       applyAt = 150;
       doneAt = 330;
+    } else if (next === 'light') {
+      // Two fish swim in → circle → yin-yang → light wash.
+      kind = 'to-light';
+      applyAt = 2600;
+      doneAt = 3400;
     } else if (next === 'purple') {
       // Orbs converge (0-700ms), white-hot flash, theme flips under it, violet wave (to ~1.35s).
       kind = 'to-purple';
