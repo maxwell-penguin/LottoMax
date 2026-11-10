@@ -53,10 +53,10 @@ export function useTheme() {
       applyAt = 150;
       doneAt = 330;
     } else if (next === 'light') {
-      // Two fish swim in → circle → yin-yang → light wash.
+      // Koi swim in → circle → yin-yang → light wash.
       kind = 'to-light';
-      applyAt = 2600;
-      doneAt = 3400;
+      applyAt = 2750;
+      doneAt = 3600;
     } else if (next === 'purple') {
       // Orbs converge (0-700ms), white-hot flash, theme flips under it, violet wave (to ~1.35s).
       kind = 'to-purple';
