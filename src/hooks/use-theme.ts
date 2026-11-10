@@ -53,10 +53,10 @@ export function useTheme() {
       applyAt = 150;
       doneAt = 330;
     } else if (next === 'light') {
-      // Koi swim in → circle as yin-yang → light wash.
+      // Koi swim/wiggle in → circle twice → yin-yang → light wash.
       kind = 'to-light';
-      applyAt = 2900;
-      doneAt = 3800;
+      applyAt = 3400;
+      doneAt = 4400;
     } else if (next === 'purple') {
       // Red grows → blue grows → fuse purple → screen explode.
       kind = 'to-purple';
