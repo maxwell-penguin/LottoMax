@@ -91,6 +91,8 @@ body {
 
 /* —— Tabbed portfolio (post-loading) —— */
 .portfolio-container--tabs {
+  --book-inset: clamp(0.85rem, 2.5vw, 1.75rem);
+  --book-chrome: calc(var(--book-inset) + 0.9rem);
   background-color: var(--bg);
   min-height: 100vh;
   min-height: 100dvh;
@@ -128,13 +130,13 @@ body {
 .portfolio-container--tabs::after {
   content: '';
   position: absolute;
-  inset: clamp(0.75rem, 2.5vw, 1.75rem);
+  inset: var(--book-inset);
   border: 1px solid var(--card-border);
   box-shadow:
     inset 1px 1px 2px rgba(0, 0, 0, 0.06),
     1px 1px 0 rgba(255, 255, 255, 0.5);
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
 }
 
 :root[data-theme="dark"] .portfolio-container--tabs::after {
@@ -145,10 +147,11 @@ body {
 
 .portfolio-top-bar {
   flex-shrink: 0;
-  padding-top: calc(1.25rem + env(safe-area-inset-top, 0px));
-  padding-right: max(3rem, env(safe-area-inset-right, 0px));
-  padding-bottom: 0.5rem;
-  padding-left: 1.5rem;
+  z-index: 4;
+  padding-top: calc(var(--book-chrome) + env(safe-area-inset-top, 0px));
+  padding-right: calc(var(--book-inset) + 2.75rem + env(safe-area-inset-right, 0px));
+  padding-bottom: 0.65rem;
+  padding-left: calc(var(--book-inset) + 1rem + env(safe-area-inset-left, 0px));
   display: flex;
   justify-content: flex-end;
 }
@@ -613,10 +616,11 @@ body {
   flex: 1;
   min-height: 0;
   position: relative;
+  z-index: 1;
   padding-top: 0;
-  padding-right: max(3rem, env(safe-area-inset-right, 0px));
+  padding-right: calc(var(--book-inset) + 1.5rem + env(safe-area-inset-right, 0px));
   padding-bottom: 0.5rem;
-  padding-left: max(3rem, env(safe-area-inset-left, 0px));
+  padding-left: calc(var(--book-inset) + 1.5rem + env(safe-area-inset-left, 0px));
   perspective: 2000px;
   perspective-origin: 50% 45%;
   transform-style: preserve-3d;
@@ -985,10 +989,10 @@ body {
 }
 
 .portfolio-back {
-  position: fixed;
-  left: max(1.25rem, env(safe-area-inset-left, 0px));
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  z-index: 10;
+  position: absolute;
+  left: calc(var(--book-inset, 1rem) + 0.5rem);
+  bottom: calc(var(--book-inset, 1rem) + 0.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 4;
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 50%;
@@ -2990,15 +2994,15 @@ body {
 /* Book-style pager */
 .portfolio-back--next {
   left: auto;
-  right: max(1.25rem, env(safe-area-inset-right, 0px));
+  right: calc(var(--book-inset, 1rem) + 0.5rem);
 }
 
 .portfolio-pager {
-  position: fixed;
+  position: absolute;
   left: 50%;
   translate: -50% 0;
-  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
-  z-index: 10;
+  bottom: calc(var(--book-inset, 1rem) + 0.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 4;
   height: 2.5rem;
   display: flex;
   align-items: center;
@@ -3020,14 +3024,14 @@ body {
 
 .portfolio-pager__toc:hover { color: var(--text-primary); }
 
-/* Dog-ear (easter egg trigger) */
+/* Dog-ear (easter egg trigger) — sits on the book frame's outer corner */
 .dog-ear {
-  position: fixed;
-  top: 0;
-  right: 0;
+  position: absolute;
+  top: var(--book-inset, 1rem);
+  right: var(--book-inset, 1rem);
   z-index: 5;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background: linear-gradient(
     to bottom left,
     var(--accent) 50%,
