@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
 import ClaudeBot from '@/components/ClaudeBot';
+import KoiFish from '@/components/KoiFish';
 import { GuestbookPanel } from '@/components/Guestbook';
 import { GalleryPanel } from '@/components/Bookshelf';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -540,33 +541,11 @@ function Home({ setShowAudio }) {
               <span className="tl-orbit">
                 <span className="tl-koi-slot tl-koi-slot--top" aria-hidden>
                   {/* dark koi enters from the left */}
-                  <span className="tl-koi tl-koi--dark">
-                    <svg viewBox="0 0 200 200" className="tl-koi__svg">
-                      <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
-                      <path className="tl-koi__body" d="M100 24 C138 28 170 52 176 92 C178 112 170 132 150 146 C140 138 138 124 150 114 C164 98 164 72 140 52 C124 38 110 28 100 24Z" />
-                      <path className="tl-koi__fin tl-koi__fin--pectoral" d="M152 108 C172 112 178 128 158 130 C154 120 152 112 152 108Z" />
-                      <path className="tl-koi__tail" d="M150 146 C132 168 148 182 162 164 C168 154 160 148 150 146Z" />
-                      <path className="tl-koi__whisker" d="M168 68 C182 58 190 52 194 48" />
-                      <path className="tl-koi__whisker" d="M170 96 C184 102 190 108 194 112" />
-                      <circle className="tl-koi__spot" cx="158" cy="72" r="11" />
-                      <circle className="tl-koi__eye" cx="166" cy="86" r="2.4" />
-                    </svg>
-                  </span>
+                  <KoiFish variant="dark" />
                 </span>
                 <span className="tl-koi-slot tl-koi-slot--bottom" aria-hidden>
                   {/* light koi enters from the right */}
-                  <span className="tl-koi tl-koi--light">
-                    <svg viewBox="0 0 200 200" className="tl-koi__svg">
-                      <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
-                      <path className="tl-koi__body" d="M100 24 C138 28 170 52 176 92 C178 112 170 132 150 146 C140 138 138 124 150 114 C164 98 164 72 140 52 C124 38 110 28 100 24Z" />
-                      <path className="tl-koi__fin tl-koi__fin--pectoral" d="M152 108 C172 112 178 128 158 130 C154 120 152 112 152 108Z" />
-                      <path className="tl-koi__tail" d="M150 146 C132 168 148 182 162 164 C168 154 160 148 150 146Z" />
-                      <path className="tl-koi__whisker" d="M168 68 C182 58 190 52 194 48" />
-                      <path className="tl-koi__whisker" d="M170 96 C184 102 190 108 194 112" />
-                      <circle className="tl-koi__spot" cx="158" cy="72" r="11" />
-                      <circle className="tl-koi__eye" cx="166" cy="86" r="2.4" />
-                    </svg>
-                  </span>
+                  <KoiFish variant="light" />
                 </span>
               </span>
               <span className="tl-yinyang" />

@@ -316,9 +316,7 @@ body {
   display: block;
   width: 100%;
   height: 100%;
-  transform-origin: 55% 50%;
   filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
-  animation: tl-wiggle 0.55s ease-in-out infinite;
 }
 
 .theme-flash--to-light .tl-koi__svg {
@@ -332,20 +330,6 @@ body {
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
-}
-
-.theme-flash--to-light .tl-koi__fin--dorsal,
-.theme-flash--to-light .tl-koi__fin--pectoral,
-.theme-flash--to-light .tl-koi__tail {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: tl-fin-sway 0.55s ease-in-out infinite;
-}
-.theme-flash--to-light .tl-koi__tail {
-  animation-duration: 0.45s;
-}
-.theme-flash--to-light .tl-koi__fin--pectoral {
-  animation-delay: 0.08s;
 }
 
 /* Black koi — white yin spot */
@@ -418,90 +402,20 @@ body {
   100% { opacity: 0; transform: scale(1.95); }
 }
 
-@keyframes tl-wiggle {
-  0%,
-  100% { transform: rotate(-5deg) translateY(0) skewX(-2deg); }
-  25% { transform: rotate(6deg) translateY(-4px) skewX(3deg); }
-  50% { transform: rotate(-4deg) translateY(3px) skewX(-2deg); }
-  75% { transform: rotate(5deg) translateY(-2px) skewX(2deg); }
-}
-
-@keyframes tl-fin-sway {
-  0%,
-  100% { transform: rotate(-6deg) scaleY(1); }
-  50% { transform: rotate(8deg) scaleY(1.06); }
-}
-
-/* Left side → center (facing right, swimming in) */
+/* Entrance is drawn by KoiFish (JS). These keep the original hold + fade-out timing. */
 @keyframes tl-swim-left {
-  0% {
-    opacity: 0;
-    transform: translate(-52vw, -6vh) rotate(0deg) scale(0.5);
-  }
-  5% { opacity: 1; }
-  12% {
-    opacity: 1;
-    transform: translate(-36vw, 4vh) rotate(8deg) scale(0.62);
-  }
-  20% {
-    transform: translate(-22vw, -5vh) rotate(-10deg) scale(0.74);
-  }
-  28% {
-    transform: translate(-10vw, 3vh) rotate(6deg) scale(0.86);
-  }
-  36% {
-    opacity: 1;
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  78% {
-    opacity: 1;
-    transform: translate(0, 0) rotate(0deg) scale(1);
-  }
-  88% {
-    opacity: 0.25;
-    transform: translate(0, 0) rotate(0deg) scale(0.92);
-  }
+  0%,
+  78% { opacity: 1; transform: none; }
+  88% { opacity: 0.25; transform: scale(0.92); }
   94%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) rotate(0deg) scale(0.85);
-  }
+  100% { opacity: 0; transform: scale(0.85); }
 }
-
-/* Right side → center (facing left, opposite yin-yang half) */
 @keyframes tl-swim-right {
-  0% {
-    opacity: 0;
-    transform: translate(52vw, 6vh) rotate(180deg) scale(0.5);
-  }
-  5% { opacity: 1; }
-  12% {
-    opacity: 1;
-    transform: translate(36vw, -4vh) rotate(172deg) scale(0.62);
-  }
-  20% {
-    transform: translate(22vw, 5vh) rotate(190deg) scale(0.74);
-  }
-  28% {
-    transform: translate(10vw, -3vh) rotate(174deg) scale(0.86);
-  }
-  36% {
-    opacity: 1;
-    transform: translate(0, 0) rotate(180deg) scale(1);
-  }
-  78% {
-    opacity: 1;
-    transform: translate(0, 0) rotate(180deg) scale(1);
-  }
-  88% {
-    opacity: 0.25;
-    transform: translate(0, 0) rotate(180deg) scale(0.92);
-  }
+  0%,
+  78% { opacity: 1; transform: none; }
+  88% { opacity: 0.25; transform: scale(0.92); }
   94%,
-  100% {
-    opacity: 0;
-    transform: translate(0, 0) rotate(180deg) scale(0.85);
-  }
+  100% { opacity: 0; transform: scale(0.85); }
 }
 
 /* Circle ~2 full turns after arrival, then fade as yin-yang takes over */
