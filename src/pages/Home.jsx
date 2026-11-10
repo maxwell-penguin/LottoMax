@@ -535,36 +535,35 @@ function Home({ setShowAudio }) {
           {themeFlash === 'to-light' ? (
             <>
               <span className="tl-wash" />
-              <span className="tl-pond" />
               <span className="tl-ripple tl-ripple--a" />
               <span className="tl-ripple tl-ripple--b" />
               <span className="tl-orbit">
+                {/* Curved koi halves — together they read as yin-yang */}
                 <span className="tl-koi tl-koi--dark" aria-hidden>
-                  <svg viewBox="0 0 120 56" className="tl-koi__svg">
-                    <path className="tl-koi__fin tl-koi__fin--dorsal" d="M48 10 C58 2 72 0 84 8 C70 10 58 14 48 10Z" />
-                    <path className="tl-koi__body" d="M18 28 C28 12 52 8 78 14 C96 18 108 24 112 28 C108 32 96 38 78 42 C52 48 28 44 18 28Z" />
-                    <path className="tl-koi__fin tl-koi__fin--pectoral" d="M44 34 C38 42 34 50 42 52 C50 46 52 38 44 34Z" />
-                    <path className="tl-koi__tail" d="M18 28 C8 16 2 12 4 28 C2 44 8 40 18 28Z" />
-                    <path className="tl-koi__whisker" d="M100 24 C110 20 116 16 118 14" />
-                    <path className="tl-koi__whisker" d="M100 32 C110 36 116 40 118 42" />
-                    <circle className="tl-koi__spot" cx="92" cy="26" r="4.5" />
-                    <circle className="tl-koi__eye" cx="88" cy="30" r="1.6" />
+                  <svg viewBox="0 0 200 200" className="tl-koi__svg">
+                    <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
+                    <path className="tl-koi__body" d="M100 24 C138 28 170 52 176 92 C178 112 170 132 150 146 C140 138 138 124 150 114 C164 98 164 72 140 52 C124 38 110 28 100 24Z" />
+                    <path className="tl-koi__fin tl-koi__fin--pectoral" d="M152 108 C172 112 178 128 158 130 C154 120 152 112 152 108Z" />
+                    <path className="tl-koi__tail" d="M150 146 C132 168 148 182 162 164 C168 154 160 148 150 146Z" />
+                    <path className="tl-koi__whisker" d="M168 68 C182 58 190 52 194 48" />
+                    <path className="tl-koi__whisker" d="M170 96 C184 102 190 108 194 112" />
+                    <circle className="tl-koi__spot" cx="158" cy="72" r="11" />
+                    <circle className="tl-koi__eye" cx="166" cy="86" r="2.4" />
                   </svg>
                 </span>
                 <span className="tl-koi tl-koi--light" aria-hidden>
-                  <svg viewBox="0 0 120 56" className="tl-koi__svg">
-                    <path className="tl-koi__fin tl-koi__fin--dorsal" d="M48 10 C58 2 72 0 84 8 C70 10 58 14 48 10Z" />
-                    <path className="tl-koi__body" d="M18 28 C28 12 52 8 78 14 C96 18 108 24 112 28 C108 32 96 38 78 42 C52 48 28 44 18 28Z" />
-                    <path className="tl-koi__fin tl-koi__fin--pectoral" d="M44 34 C38 42 34 50 42 52 C50 46 52 38 44 34Z" />
-                    <path className="tl-koi__tail" d="M18 28 C8 16 2 12 4 28 C2 44 8 40 18 28Z" />
-                    <path className="tl-koi__whisker" d="M100 24 C110 20 116 16 118 14" />
-                    <path className="tl-koi__whisker" d="M100 32 C110 36 116 40 118 42" />
-                    <circle className="tl-koi__spot" cx="92" cy="26" r="4.5" />
-                    <circle className="tl-koi__eye" cx="88" cy="30" r="1.6" />
+                  <svg viewBox="0 0 200 200" className="tl-koi__svg">
+                    <path className="tl-koi__fin tl-koi__fin--dorsal" d="M148 48 C168 32 182 42 170 62 C160 54 154 50 148 48Z" />
+                    <path className="tl-koi__body" d="M100 24 C138 28 170 52 176 92 C178 112 170 132 150 146 C140 138 138 124 150 114 C164 98 164 72 140 52 C124 38 110 28 100 24Z" />
+                    <path className="tl-koi__fin tl-koi__fin--pectoral" d="M152 108 C172 112 178 128 158 130 C154 120 152 112 152 108Z" />
+                    <path className="tl-koi__tail" d="M150 146 C132 168 148 182 162 164 C168 154 160 148 150 146Z" />
+                    <path className="tl-koi__whisker" d="M168 68 C182 58 190 52 194 48" />
+                    <path className="tl-koi__whisker" d="M170 96 C184 102 190 108 194 112" />
+                    <circle className="tl-koi__spot" cx="158" cy="72" r="11" />
+                    <circle className="tl-koi__eye" cx="166" cy="86" r="2.4" />
                   </svg>
                 </span>
               </span>
-              <span className="tl-yinyang" />
               <span className="tl-bloom" />
             </>
           ) : themeFlash === 'to-purple' ? (
