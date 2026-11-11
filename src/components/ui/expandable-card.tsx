@@ -76,14 +76,16 @@ function AccentAnchor({
   id,
   accentColor,
   expanded,
+  sharedLayout = true,
 }: {
   id: ExpandableCardId;
   accentColor: string;
   expanded: boolean;
+  sharedLayout?: boolean;
 }) {
   return (
     <motion.div
-      layoutId={`accent-${id}`}
+      layoutId={sharedLayout ? `accent-${id}` : undefined}
       className={cn('w-full shrink-0', expanded ? 'mb-4 h-20 rounded-xl' : 'mb-2 h-1 rounded-full')}
       style={{
         background: expanded
@@ -102,7 +104,7 @@ function CardHero({
   expanded,
   isExperienceBanner = false,
 }: {
-  layoutId: string;
+  layoutId?: string;
   image?: string;
   accentColor: string;
   expanded: boolean;
@@ -119,22 +121,13 @@ function CardHero({
         isExperienceBanner && 'expandable-card__hero--experience-banner',
       )}
     >
-      {image ? (
-        <img
-          src={image}
-          alt=""
-          className="expandable-card__hero-img"
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <div
-          className="expandable-card__hero-fallback"
-          style={{
-            background: `linear-gradient(180deg, ${accentColor} 0%, ${accentColor}cc 100%)`,
-          }}
-        />
-      )}
+      <img
+        src={image}
+        alt=""
+        className="expandable-card__hero-img"
+        loading="lazy"
+        decoding="async"
+      />
       <div
         className="expandable-card__hero-accent"
         style={{ backgroundColor: accentColor }}
@@ -142,6 +135,8 @@ function CardHero({
     </motion.div>
   );
 }
+
+const EXPAND_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 export interface ExpandableCardProps {
   id: ExpandableCardId;
@@ -218,16 +213,19 @@ export function ExpandableCard({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isActive]);
 
-  const cardLayoutId = `card-${id}`;
-  const titleLayoutId = `title-${id}`;
-  const descLayoutId = `desc-${id}`;
-  const imageLayoutId = `image-${id}`;
   const useCardHero =
     heroStyle === 'project-hero' ||
     heroStyle === 'card-hero' ||
     heroStyle === 'experience-banner';
   const useProjectHero = heroStyle === 'project-hero';
   const isExperienceBanner = heroStyle === 'experience-banner';
+  // Shared layout morphs through rotated/scaled hand cards are janky — use a
+  // lightweight scale/fade expand for project cards instead.
+  const sharedLayout = !useProjectHero;
+  const cardLayoutId = sharedLayout ? `card-${id}` : undefined;
+  const titleLayoutId = sharedLayout ? `title-${id}` : undefined;
+  const descLayoutId = sharedLayout ? `desc-${id}` : undefined;
+  const imageLayoutId = sharedLayout ? `image-${id}` : undefined;
 
   const collapsedBackgroundStyle =
     accentGradient && !useCardHero
@@ -253,7 +251,7 @@ export function ExpandableCard({
       />
     </motion.div>
   ) : (
-    <AccentAnchor id={id} accentColor={accentColor} expanded={false} />
+    <AccentAnchor id={id} accentColor={accentColor} expanded={false} sharedLayout={sharedLayout} />
   );
 
   const expandedHero = useCardHero ? (
@@ -273,7 +271,7 @@ export function ExpandableCard({
       />
     </motion.div>
   ) : (
-    <AccentAnchor id={id} accentColor={accentColor} expanded />
+    <AccentAnchor id={id} accentColor={accentColor} expanded sharedLayout={sharedLayout} />
   );
 
   return (
@@ -289,7 +287,11 @@ export function ExpandableCard({
           setActiveId(id);
         }}
         whileHover={whileHover}
-        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+        transition={
+          sharedLayout
+            ? { type: 'spring', stiffness: 280, damping: 28 }
+            : { duration: 0.2, ease: EXPAND_EASE }
+        }
         style={{
           ...collapsedBackgroundStyle,
           '--accent-color': accentColor,
@@ -299,6 +301,7 @@ export function ExpandableCard({
           'rounded-3xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-sm',
           'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E8856A]',
           useCardHero && 'overflow-hidden p-0',
+          isActive && useProjectHero && 'opacity-0 pointer-events-none',
           collapsedClassName,
           className,
         )}
@@ -390,12 +393,36 @@ export function ExpandableCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            className={cn(
+              'fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4',
+              !useProjectHero && 'backdrop-blur-sm',
+            )}
             onClick={onClose}
           >
             <motion.div
               ref={modalRef}
               layoutId={cardLayoutId}
+              initial={
+                useProjectHero
+                  ? { opacity: 0, scale: 0.94, y: 18 }
+                  : undefined
+              }
+              animate={
+                useProjectHero
+                  ? { opacity: 1, scale: 1, y: 0 }
+                  : undefined
+              }
+              exit={
+                useProjectHero
+                  ? { opacity: 0, scale: 0.96, y: 10 }
+                  : undefined
+              }
+              transition={
+                useProjectHero
+                  ? { duration: 0.32, ease: EXPAND_EASE }
+                  : { type: 'spring', stiffness: 280, damping: 28 }
+              }
               onClick={(event) => event.stopPropagation()}
               className={cn(
                 'expandable-card__modal relative flex w-full flex-col',
@@ -404,6 +431,7 @@ export function ExpandableCard({
                   ? 'expandable-card__modal--project'
                   : 'max-h-[min(90vh,40rem)] max-w-lg overflow-y-auto',
               )}
+              style={useProjectHero ? { willChange: 'transform, opacity' } : undefined}
             >
               <button
                 type="button"

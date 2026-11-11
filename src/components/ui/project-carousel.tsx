@@ -142,7 +142,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
       case 'deal':
         return { duration: 0.7, ease: EASE, delay: i * DEAL_STAGGER };
       default:
-        return { duration: 0.35, ease: EASE };
+        return { duration: 0.42, ease: EASE };
     }
   };
 
@@ -195,7 +195,11 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
               animate={{ x: t.x, y: t.y, rotate: t.rotate, scale: t.scale }}
               transition={transition(i)}
               className={cn('hand__card', isFocused && inHand && 'is-focused')}
-              style={{ zIndex: t.zIndex, pointerEvents: inHand ? 'auto' : 'none' }}
+              style={{
+                zIndex: t.zIndex,
+                pointerEvents: inHand ? 'auto' : 'none',
+                willChange: 'transform',
+              }}
             >
               {!isFocused && inHand ? (
                 <div className="pointer-events-none absolute inset-0 z-10 rounded-[1.1rem] bg-black/10" aria-hidden />
