@@ -316,6 +316,9 @@ function ResumePanel() {
   );
 }
 
+// secondary sparks thrown from the impact point (px offsets)
+const DEBRIS = [[-130, -70], [110, -110], [170, 30], [-90, 120], [30, 150], [-190, 20], [90, -170]];
+
 const THEME_LABEL = {
   light: 'Switch to dark mode',
   dark: 'Hollow Purple',
@@ -529,6 +532,7 @@ function Home({ setShowAudio }) {
       <AnimatePresence>{showCover && <BookCover onOpen={openCover} behind={Boolean(flip)} />}</AnimatePresence>
       <TopBar section={section} theme={theme} toggleTheme={toggleTheme} />
 
+      {theme === 'dark' && <div className="dark-crater" aria-hidden />}
       {theme === 'purple' && <div className="purple-field" aria-hidden><i className="purple-field__orb purple-field__orb--red" /><i className="purple-field__orb purple-field__orb--blue" /><i className="purple-field__core" /></div>}
 
       {themeFlash ? (
@@ -559,13 +563,17 @@ function Home({ setShowAudio }) {
               <span className="tp-wave" />
             </>
           ) : themeFlash === 'to-dark' ? (
-            <>
-              <span className="theme-flash__trail" />
-              <span className="theme-flash__meteor" />
-              <span className="theme-flash__impact" />
-              <span className="theme-flash__iris" />
-              <span className="theme-flash__void" />
-            </>
+            <div className="td-anchor">
+              <span className="td-meteor">
+                <span className="td-meteor__tail" />
+                <span className="td-meteor__core" />
+              </span>
+              <span className="td-flash" />
+              <span className="td-ring" />
+              {DEBRIS.map(([dx, dy], i) => (
+                <span key={i} className="td-debris" style={{ '--dx': `${dx}px`, '--dy': `${dy}px` }} />
+              ))}
+            </div>
           ) : null}
         </div>
       ) : null}
