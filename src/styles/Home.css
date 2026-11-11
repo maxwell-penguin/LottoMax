@@ -3640,3 +3640,43 @@ body {
   --text-tertiary: #7A7A74;
   box-shadow: 0 0 40px rgba(139, 63, 255, 0.5), 0 0 90px rgba(139, 63, 255, 0.22);
 }
+
+/* ── Project card peek / pin ──────────────────────────────────────────── */
+.hand__card { width: 17.5rem; height: 26rem; }
+
+.hand-face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+.hand-face:focus-visible {
+  outline: 3px solid #ffd98a;
+  outline-offset: 3px;
+}
+.hand-face .expandable-card__hero--collapsed { transition: height 0.2s ease; }
+.hand-face.is-peek .expandable-card__hero--collapsed { height: 84px; }
+.hand-face.is-peek .expandable-card__body { overflow-y: auto; scrollbar-width: none; }
+.hand-face.is-peek .expandable-card__body::-webkit-scrollbar { display: none; }
+.hand-face.is-peek .project-carousel-card__description {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+.hand-face__peek { display: flex; flex-direction: column; gap: 0.75rem; padding-bottom: 1.5rem; }
+.hand-face__bullets { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin: 0; padding: 0; }
+.hand-face__bullets li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #57534e;
+}
+.hand-face__bullets li::before { content: '•'; position: absolute; left: 0; color: #a8a29e; }
+.hand-face__tags { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+.hand { height: 36rem; }
+@media (max-width: 640px) { .hand { height: 34rem; } }
