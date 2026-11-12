@@ -18,6 +18,12 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+// Resting pose of the assembled stack: shared by every page and the cover.
+const STACK_BASE = { rotateX: 74, rotateY: 0 };
+const STACK_NUDGE_PX = 0.25; // per-page offset: edges peek out evenly on the left and bottom only
+// Tiny in-plane rotation per page (deg), bottom -> top; adjacent pages differ by <= ~1deg, top = 0.
+const STACK_JITTER_DEG = [0.5, -0.3, 0.7, 0.1, -0.6, 0.4, -0.2, 0.6, -0.5, 0.2, -0.7, 0.3, 0, -0.4, 0.5, -0.1, 0.3, 0];
+
 /** Deterministic paper slice seeds. */
 const PAPER_SEEDS = [
   { x: -72, y: -52, r: -48, rx: 70, ry: -35, delay: 0.0, w: 9.5, h: 13 },
@@ -136,12 +142,16 @@ export default function BookCover({ onOpen, behind = false }) {
               <AnimatePresence>
                 {showPapers &&
                   papers.map((p, i) => {
+                    // Squared-up stack: every page shares the book's base pose (rotateX 74,
+                    // no yaw); only a tiny in-plane jitter and an even left/down nudge differ.
+                    // Top page sits exactly on the cover (0px, 0deg).
+                    const depth = papers.length - 1 - i; // 0 = top of the stack
                     const stacked = {
-                      x: ((i % 6) - 2.5) * 1.8,
-                      y: Math.floor(i / 6) * -0.9 - 1,
-                      rotate: ((i % 3) - 1) * 1.5,
-                      rotateX: 74,
-                      rotateY: ((i % 4) - 1.5) * 2,
+                      x: -depth * STACK_NUDGE_PX,
+                      y: depth * STACK_NUDGE_PX,
+                      rotate: STACK_JITTER_DEG[i % STACK_JITTER_DEG.length],
+                      rotateX: STACK_BASE.rotateX,
+                      rotateY: STACK_BASE.rotateY,
                       scale: stackScale[i] * 0.94,
                     };
 
@@ -235,7 +245,7 @@ export default function BookCover({ onOpen, behind = false }) {
                           opacity: 1,
                           scale: phase === 'merge' ? 1 : 0.94,
                           rotateX: 74,
-                          rotateY: -5,
+                          rotateY: STACK_BASE.rotateY,
                           z: 0,
                         }
                       : bookPose === 'upright'
