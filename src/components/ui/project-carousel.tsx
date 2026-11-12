@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion, useAnimationControls } from 'framer-motion';
@@ -14,13 +15,11 @@ import { cn } from '@/lib/utils';
 // ── Tweakables ─────────────────────────────────────────────────────────────
 export const PEEK = {
   HOVER_DELAY_MS: 80, // intent delay before a hover opens the peek
-  SCALE: 1.08, // hovered card scale
-  DIM_OPACITY: 0.55, // opacity of the other cards while one is peeked
-  NEIGHBOR_SHIFT_PX: 36, // how far the adjacent cards slide away (falls off with distance)
-  LIFT_PX: 20, // how far the peeked card rises
-  RESET_MS: 200, // return-to-rest duration
-  PEEK_WIDTH_PX: 336, // peeked card size (resting card is 280 x 416)
-  PEEK_HEIGHT_PX: 480,
+  SCALE: 1.08, // hovered card scale (transform only — no width/height)
+  DIM_OVERLAY: 0.38, // solid dim overlay on non-peeked cards (keeps bg opaque)
+  NEIGHBOR_SHIFT_PX: 28, // how far the adjacent cards slide away (falls off with distance)
+  LIFT_PX: 18, // how far the peeked card rises
+  RESET_MS: 180, // return-to-rest duration
   PIN_MS: 450, // pinned open/close animation
   BACKDROP_BLUR_PX: 6,
 };
@@ -291,30 +290,31 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
 
   const handTarget = (i: number) => {
     const o = i - center;
+    // Stable stacking: left→right by index; focused/hovered rise above.
+    const stackZ = i + 1;
     const base =
       i === focused
-        ? { x: o * spacing, y: -28, rotate: 0, scale: 1.05, zIndex: 100 }
-        : { x: o * spacing, y: o * o * drop, rotate: o * angle, scale: 0.97, zIndex: i + 1 };
-    const rest = { ...base, w: CARD_W, h: CARD_H, opacity: 1 };
-    if (pinned || hovered === null) return pinned?.i === i ? { ...rest, opacity: 0 } : rest;
+        ? { x: o * spacing, y: -28, rotate: 0, scale: 1.04, zIndex: 100 + i }
+        : { x: o * spacing, y: o * o * drop, rotate: o * angle, scale: 0.97, zIndex: stackZ };
+    if (pinned) {
+      // Hide source card via visibility class — keep transform opacity at 1 so bg stays solid.
+      return base;
+    }
+    if (hovered === null) return base;
     if (i === hovered) {
-      // reduced motion: no scale/rotation/growth, just the content crossfade
       return reduce
-        ? { ...rest, zIndex: 200 }
+        ? { ...base, zIndex: 200 }
         : {
             x: o * spacing,
             y: -PEEK.LIFT_PX,
             rotate: 0,
             scale: PEEK.SCALE,
             zIndex: 200,
-            w: PEEK.PEEK_WIDTH_PX,
-            h: PEEK.PEEK_HEIGHT_PX,
-            opacity: 1,
           };
     }
     const d = i - hovered;
     const shift = reduce ? 0 : (Math.sign(d) * PEEK.NEIGHBOR_SHIFT_PX) / Math.abs(d);
-    return { ...rest, x: base.x + shift, opacity: PEEK.DIM_OPACITY };
+    return { ...base, x: base.x + shift, zIndex: stackZ };
   };
 
   const target = (i: number) => {
@@ -327,15 +327,12 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
           rotate: o * angle * 0.9,
           scale: 0.97,
           zIndex: i + 1,
-          w: CARD_W,
-          h: CARD_H,
-          opacity: 1,
         };
       case 'deal':
       case 'hand':
         return handTarget(i);
       default: // deck, bundle
-        return { x: 0, y: 0, rotate: 0, scale: 0.97, zIndex: i + 1, w: CARD_W, h: CARD_H, opacity: 1 };
+        return { x: 0, y: 0, rotate: 0, scale: 0.97, zIndex: i + 1 };
     }
   };
 
@@ -377,7 +374,7 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
     setHovered(null);
   };
 
-  const enter = (i: number, e: React.PointerEvent) => {
+  const enter = (i: number, e: ReactPointerEvent) => {
     if (e.pointerType === 'touch' || pinned) return; // touch: tap pins directly
     clearTimeout(intent.current);
     intent.current = window.setTimeout(() => setHovered(i), PEEK.HOVER_DELAY_MS);
@@ -415,9 +412,15 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
 
         {projects.map((project, i) => {
           const isFocused = focused === i;
+          const isHovered = hovered === i;
+          const isDimmed =
+            inHand &&
+            !pinned &&
+            ((hovered !== null && hovered !== i) || (hovered === null && !isFocused));
           const pip = pipFor(i);
           const cardId = `0-${project.id}`;
           const t = target(i);
+          const isAnimatingHover = inHand && hovered !== null;
 
           return (
             <motion.div
@@ -431,24 +434,25 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                 y: t.y,
                 rotate: t.rotate,
                 scale: t.scale,
-                width: t.w,
-                height: t.h,
-                marginLeft: -t.w / 2,
-                opacity: t.opacity,
               }}
               transition={transition(i)}
-              className={cn('hand__card', isFocused && inHand && 'is-focused')}
+              className={cn(
+                'hand__card',
+                isFocused && inHand && 'is-focused',
+                isHovered && 'is-peeking',
+                pinned?.i === i && 'is-pinned-source',
+              )}
               style={{
                 zIndex: t.zIndex,
-                pointerEvents: inHand ? 'auto' : 'none',
-                willChange: 'transform',
+                pointerEvents: inHand && !pinned ? 'auto' : 'none',
+                // Only promote layers while a hover interaction is live.
+                willChange: isAnimatingHover || isHovered ? 'transform' : 'auto',
               }}
               onPointerEnter={(e) => enter(i, e)}
               onPointerLeave={() => leave(i)}
             >
-              {!isFocused && inHand ? (
-                <div className="pointer-events-none absolute inset-0 z-10 rounded-[1.1rem] bg-black/10" aria-hidden />
-              ) : null}
+              {/* Soft lift shadow — opacity only, not animated box-shadow blur */}
+              <span className="hand__lift-shadow" aria-hidden />
               <motion.div
                 className="hand__back"
                 initial={false}
@@ -477,12 +481,11 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                 aria-label={project.title}
                 className={cn(
                   'expandable-card project-carousel-card poker-card hand-face',
-                  hovered === i && 'is-peek',
+                  isHovered && 'is-peek',
                 )}
                 style={{ '--accent-color': project.color } as React.CSSProperties}
                 onClick={() => pin(i)}
                 onFocus={(e) => {
-                  // keyboard focus shows the peek; mouse/tap focus doesn't
                   if (!pinned && e.currentTarget.matches(':focus-visible')) setHovered(i);
                 }}
                 onBlur={() => leave(i)}
@@ -504,13 +507,23 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                 <div className="expandable-card__body flex min-h-0 flex-1 flex-col px-5 pb-5 pt-4">
                   <h3 className="project-carousel-card__title">{project.title}</h3>
                   <p className="project-carousel-card__description">{project.description}</p>
-                  {hovered === i ? (
-                    <motion.div
-                      className="hand-face__peek"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: PEEK.RESET_MS / 1000 }}
-                    >
+                  {/* Keep both panels mounted — CSS opacity crossfade, no remount/layout thrash */}
+                  <div className="hand-face__swap">
+                    <div className="hand-face__rest" aria-hidden={isHovered}>
+                      <div className="project-carousel-card__collapsed-content">
+                        <div className="project-carousel-card__footer flex flex-col gap-2.5">
+                          <div className="project-carousel-card__tags flex flex-wrap gap-1.5">
+                            {project.tech.slice(0, 3).map((tag) => (
+                              <ExpandableTag key={tag} label={tag} accentColor={project.color} />
+                            ))}
+                          </div>
+                          {project.highlights?.[0] ? (
+                            <p className="project-carousel-card__teaser line-clamp-2">{project.highlights[0]}</p>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hand-face__peek" aria-hidden={!isHovered}>
                       {project.highlights && project.highlights.length > 0 ? (
                         <ul className="hand-face__bullets">
                           {project.highlights.map((h) => (
@@ -523,21 +536,8 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                           <ExpandableTag key={tag} label={tag} accentColor={project.color} />
                         ))}
                       </div>
-                    </motion.div>
-                  ) : (
-                    <div className="project-carousel-card__collapsed-content">
-                      <div className="project-carousel-card__footer flex flex-col gap-2.5">
-                        <div className="project-carousel-card__tags flex flex-wrap gap-1.5">
-                          {project.tech.slice(0, 3).map((tag) => (
-                            <ExpandableTag key={tag} label={tag} accentColor={project.color} />
-                          ))}
-                        </div>
-                        {project.highlights?.[0] ? (
-                          <p className="project-carousel-card__teaser line-clamp-2">{project.highlights[0]}</p>
-                        ) : null}
-                      </div>
                     </div>
-                  )}
+                  </div>
                   <span
                     className="pointer-events-none absolute bottom-4 right-4 z-[1] rounded-full p-1 text-[var(--text-secondary)]"
                     aria-hidden
@@ -545,6 +545,12 @@ export function ProjectCarousel({ projects }: { projects: ProjectCarouselItem[] 
                     <Plus size={18} />
                   </span>
                 </div>
+                {/* Solid dim overlay — never make the card bg translucent */}
+                <span
+                  className={cn('hand__dim', isDimmed && 'is-on')}
+                  style={{ '--dim': PEEK.DIM_OVERLAY } as React.CSSProperties}
+                  aria-hidden
+                />
               </div>
             </motion.div>
           );

@@ -1251,11 +1251,13 @@ body {
   border: 1px solid #d6c6a8 !important;
   background:
     linear-gradient(180deg, #fffdf8 0%, #f4ebe0 100%) !important;
+  /* Static shadow — peek lift uses .hand__lift-shadow opacity instead */
   box-shadow:
     inset 0 0 0 3px #fffdf8,
     inset 0 0 0 4px #c4a574,
     0 10px 24px rgba(0, 0, 0, 0.28) !important;
   color: #1c1917;
+  opacity: 1 !important;
 }
 
 :root[data-theme='dark'] .poker-card.project-carousel-card,
@@ -1276,7 +1278,7 @@ body {
 }
 
 .poker-card .expandable-card__body {
-  background: transparent;
+  background: #f7f0e6;
 }
 
 .poker-card .expandable-card__hero--collapsed {
@@ -3000,7 +3002,8 @@ body {
 .hand__card {
   height: 26rem;
   transform-origin: 50% 100%;
-  will-change: transform;
+  isolation: isolate;
+  /* will-change set inline only during hover interactions */
 }
 
 .hand__edge {
@@ -3045,11 +3048,26 @@ body {
   pointer-events: none;
 }
 
-.hand__card.is-focused .poker-card:hover {
-  box-shadow:
-    inset 0 0 0 3px #fffdf8,
-    inset 0 0 0 4px #c4a574,
-    0 14px 32px rgba(0, 0, 0, 0.38) !important;
+.hand__lift-shadow {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: -10px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.35) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  transition: opacity 180ms ease;
+  transform: translateZ(0);
+}
+.hand__card.is-peeking .hand__lift-shadow {
+  opacity: 0.85;
+}
+.hand__card.is-pinned-source {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @media (max-width: 640px) {
@@ -3516,20 +3534,74 @@ body {
   text-align: left;
   cursor: pointer;
   outline: none;
+  background: linear-gradient(180deg, #fffdf8 0%, #f4ebe0 100%);
+  isolation: isolate;
 }
 .hand-face:focus-visible {
   outline: 3px solid #ffd98a;
   outline-offset: 3px;
 }
-.hand-face .expandable-card__hero--collapsed { transition: height 0.2s ease; }
-.hand-face.is-peek .expandable-card__hero--collapsed { height: 84px; }
-.hand-face.is-peek .expandable-card__body { overflow-y: auto; scrollbar-width: none; }
+
+/* Dim as a solid overlay unit — never lower card opacity */
+.hand__dim {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  background: #1a1612;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  transform: translateZ(0);
+}
+.hand__dim.is-on {
+  opacity: var(--dim, 0.38);
+}
+
+.hand-face.is-peek .expandable-card__body {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
 .hand-face.is-peek .expandable-card__body::-webkit-scrollbar { display: none; }
 .hand-face.is-peek .project-carousel-card__description {
-  display: block;
-  -webkit-line-clamp: unset;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
-.hand-face__peek { display: flex; flex-direction: column; gap: 0.75rem; padding-bottom: 1.5rem; }
+
+/* Stack rest/peek in one grid cell — opacity crossfade, no layout thrash */
+.hand-face__swap {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+}
+.hand-face__rest,
+.hand-face__peek {
+  grid-area: 1 / 1;
+  min-width: 0;
+  transition: opacity 160ms ease;
+}
+.hand-face__rest {
+  opacity: 1;
+}
+.hand-face__peek {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+}
+.hand-face.is-peek .hand-face__rest {
+  opacity: 0;
+  pointer-events: none;
+}
+.hand-face.is-peek .hand-face__peek {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .hand-face__bullets { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; margin: 0; padding: 0; }
 .hand-face__bullets li {
   position: relative;
