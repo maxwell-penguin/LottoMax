@@ -49,6 +49,13 @@ export default function BookCover({ onOpen, behind = false }) {
   );
   const timersRef = useRef([]);
   const papers = useMemo(() => PAPER_SEEDS, []);
+  // Scale that makes each (differently sized) flying paper the same size as the book cover,
+  // so the assembled stack reads as one set of pages under the cover, not small stray sheets.
+  const stackScale = useMemo(() => {
+    const bookW = Math.min(window.innerWidth * 0.42, 280);
+    const bookH = Math.min(window.innerWidth * 0.58, 380);
+    return papers.map((p) => Math.sqrt((bookW * bookH) / (p.w * 16 * p.h * 16)));
+  }, [papers]);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach(clearTimeout);
@@ -135,7 +142,7 @@ export default function BookCover({ onOpen, behind = false }) {
                       rotate: ((i % 3) - 1) * 1.5,
                       rotateX: 74,
                       rotateY: ((i % 4) - 1.5) * 2,
-                      scale: 0.92,
+                      scale: stackScale[i] * 0.94,
                     };
 
                     return (
@@ -145,6 +152,9 @@ export default function BookCover({ onOpen, behind = false }) {
                         style={{
                           width: `${p.w}rem`,
                           height: `${p.h}rem`,
+                          // center each paper on its own size (the CSS margin assumed 9x12rem)
+                          marginLeft: `${-p.w / 2}rem`,
+                          marginTop: `${-p.h / 2}rem`,
                           zIndex: i + 1,
                         }}
                         initial={{
@@ -185,10 +195,10 @@ export default function BookCover({ onOpen, behind = false }) {
                               : {
                                   ...stacked,
                                   opacity: 0,
-                                  scale: 0.85,
+                                  scale: stackScale[i] * 0.87,
                                 }
                         }
-                        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.35 } }}
+                        exit={{ opacity: 0, scale: stackScale[i] * 0.8, transition: { duration: 0.35 } }}
                         transition={
                           phase === 'scatter'
                             ? {
@@ -215,6 +225,7 @@ export default function BookCover({ onOpen, behind = false }) {
 
               <motion.div
                 className="cover-intro__book"
+                style={{ zIndex: 50 }}
                 initial={{ opacity: 0, scale: 0.75, rotateX: 82, rotateY: -10, z: -100 }}
                 animate={
                   bookPose === 'hidden'
