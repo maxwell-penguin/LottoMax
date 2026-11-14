@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import BookCover from '@/components/BookCover';
 import ClaudeBot from '@/components/ClaudeBot';
 import KoiFish from '@/components/KoiFish';
+import MeteorImpact from '@/components/MeteorImpact';
 import { GuestbookPanel } from '@/components/Guestbook';
 import { GalleryPanel } from '@/components/Bookshelf';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -316,9 +317,6 @@ function ResumePanel() {
   );
 }
 
-// secondary sparks thrown from the impact point (px offsets)
-const DEBRIS = [[-130, -70], [110, -110], [170, 30], [-90, 120], [30, 150], [-190, 20], [90, -170]];
-
 const THEME_LABEL = {
   light: 'Switch to dark mode',
   dark: 'Hollow Purple',
@@ -450,7 +448,7 @@ function Home({ setShowAudio }) {
   const navigate = useNavigate();
   const isSecret = pathname.replace(/\/+$/, '') === '/secret';
   const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
-  const { theme, toggleTheme, transition: themeFlash } = useTheme();
+  const { theme, toggleTheme, transition: themeFlash, transitionGo: themeGo } = useTheme();
   const [showCover, setShowCover] = useState(() => !coverSeen && pathname === '/');
   const openCover = useCallback(() => {
     coverSeen = true;
@@ -563,17 +561,7 @@ function Home({ setShowAudio }) {
               <span className="tp-wave" />
             </>
           ) : themeFlash === 'to-dark' ? (
-            <div className="td-anchor">
-              <span className="td-meteor">
-                <span className="td-meteor__tail" />
-                <span className="td-meteor__core" />
-              </span>
-              <span className="td-flash" />
-              <span className="td-ring" />
-              {DEBRIS.map(([dx, dy], i) => (
-                <span key={i} className="td-debris" style={{ '--dx': `${dx}px`, '--dy': `${dy}px` }} />
-              ))}
-            </div>
+            <MeteorImpact go={themeGo} />
           ) : null}
         </div>
       ) : null}
