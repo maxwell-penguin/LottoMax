@@ -14,30 +14,16 @@ export const aboutData = {
   aboutAvailability: "Open to internships & full-time roles",
   /** About tab — intro paragraph */
   aboutBio:
-    "I love to build! Anything from Chrome extensions, web apps, iOS, blockchain, to research and whatever else I can get my hands on. Most of all, I love making projects that have a positive impact on communities.",
-  aboutOpenTo:
-    "Open to collaborations and good conversations about the gym, products, and food!",
-  aboutHighlights: [
-    "Team Canada Junior National Team",
-    "IB graduate from White Oaks Secondary",
-    "Spent a couple months doing UGC content creation",
-  ],
-  tryNextLabel: "would love to try next:",
-  tryNext: [
-    { icon: "🔩", text: "Hardware" },
-    { icon: "🧠", text: "Machine Learning" },
-    { icon: "⛳", text: "Golf" },
-    { icon: "⛷️", text: "Skiing" },
-  ],
-  intoLabel: "into:",
-  into: [
-    { icon: "🃏", text: "Poker" },
-    { icon: "📈", text: "Stock market" },
-    { icon: "🏸", text: "Racket sports" },
-    { icon: "🏊", text: "Competitive swimming (8 years)" },
-    { icon: "💻", text: "Hackathons" },
-    { icon: "🍜", text: "Food" },
-  ],
+    "I love building, whether that's Chrome extensions, web apps, iOS, or blockchain. What I care about most is making things that actually help communities. Outside of that, I'm always up for a good conversation about the gym, products, or where to get good food.",
+  /** About tab — "notable": one standout line plus a lighter secondary row */
+  aboutNotable: {
+    primary: "Team Canada Junior National Team",
+    secondary: "IB graduate, White Oaks Secondary · brief stint in UGC content creation",
+  },
+  aboutNext:
+    "Getting into hardware, picking up machine learning, and improving my golf and ski game",
+  aboutOffClock:
+    "Poker, the stock market, racket sports, 8 years of competitive swimming, hackathons, and good food",
   aboutCurrently: "Backend Engineering Intern at Resilient Privacy",
   aboutCurrentlyBuilding: {
     name: "Dice AI",

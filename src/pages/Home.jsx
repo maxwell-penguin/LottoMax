@@ -199,31 +199,23 @@ function AboutPanel() {
           </div>
           <p className="about-tagline">{aboutData.aboutTagline}</p>
           <p className="about-body">{aboutData.aboutBio}</p>
-          <p className="about-body">{aboutData.aboutOpenTo}</p>
         </header>
 
         <section className="about-section">
-          <h2 className="about-label">fun facts</h2>
-          <ul className="about-list">
-            {aboutData.aboutHighlights.map((line, i) => (
-              <li key={i}>{line}</li>
-            ))}
-          </ul>
+          <h2 className="about-label">notable</h2>
+          <p className="about-notable__primary">{aboutData.aboutNotable.primary}</p>
+          <p className="about-notable__secondary">{aboutData.aboutNotable.secondary}</p>
         </section>
 
         <section className="about-section">
           <div className="about-interests">
             <div className="about-interests__col">
               <h2 className="about-label">what's next</h2>
-              <p className="about-body">
-                {aboutData.tryNext.map((item) => item.text).join(', ')}
-              </p>
+              <p className="about-body">{aboutData.aboutNext}</p>
             </div>
             <div className="about-interests__col">
               <h2 className="about-label">off the clock</h2>
-              <p className="about-body">
-                {aboutData.into.map((item) => item.text).join(', ')}
-              </p>
+              <p className="about-body">{aboutData.aboutOffClock}</p>
             </div>
           </div>
         </section>
@@ -590,7 +582,7 @@ function Home({ setShowAudio }) {
 
       <ClaudeBot
         sectionKey={isSecret ? 'secret' : section ? section.path : 'home'}
-        active={!showCover && !flip && !isSecret}
+        active={!showCover && !flip && !isSecret && section?.path !== 'about'}
       />
 
       <AnimatePresence>
