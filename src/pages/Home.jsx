@@ -6,22 +6,18 @@ import KoiFish from '@/components/KoiFish';
 import MeteorImpact from '@/components/MeteorImpact';
 import { GuestbookPanel } from '@/components/Guestbook';
 import TerminalHeader from '@/components/TerminalHeader';
+import TerminalWindow, { JsonBlock, Prompt } from '@/components/TerminalWindow';
+import ExperienceLog from '@/components/ExperienceLog';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import '../styles/Home.css';
 import {
-  experienceData,
   projectsData,
   aboutData,
+  educationData,
 } from '../data/content';
 import { ProjectCarousel } from '@/components/ui/project-carousel';
-import { ExperienceCard } from '@/components/ui/experience-card';
-import { ExperienceTiltCard } from '@/components/ui/experience-tilt-card';
-import {
-  ExpandableCard,
-  ExpandableCardGroup,
-  ExpandableTag,
-} from '@/components/ui/expandable-card';
+import { ExpandableCardGroup } from '@/components/ui/expandable-card';
 import { useTheme } from '@/hooks/use-theme';
 
 function IconGithub({ size = 18 }) {
@@ -142,8 +138,32 @@ function AnimatedName({ text }) {
   );
 }
 
+// Loose "focus" tags for the JSON block (from the resume's skills).
+const ABOUT_FOCUS = ['backend', 'AI/ML', 'full-stack web'];
+const ABOUT_INTERESTS = ['badminton', 'chess', 'poker', 'racket sports', 'swimming'];
+
+function Comment({ children, className = '' }) {
+  return (
+    <p className={`about-comment ${className}`.trim()}>
+      <span className="about-comment__slashes">// </span>
+      {children}
+    </p>
+  );
+}
+
 function AboutPanel() {
   const building = aboutData.aboutCurrentlyBuilding;
+  const lower = (t) => t.charAt(0).toLowerCase() + t.slice(1);
+  const json = {
+    name: aboutData.name,
+    school: educationData.school,
+    grad: Number(educationData.graduation.match(/\d{4}/)?.[0]),
+    role: aboutData.aboutCurrently.replace(' at ', ' @ '),
+    focus: ABOUT_FOCUS,
+    status: lower(aboutData.aboutAvailability),
+    building: building.name,
+    interests: ABOUT_INTERESTS,
+  };
 
   return (
     <div className="tab-panel tab-panel--about">
@@ -153,52 +173,42 @@ function AboutPanel() {
             <img src="/profile.png" alt="Maxwell Peng" className="about-photo" />
             <AnimatedName text={aboutData.name} />
           </div>
-          <div className="about-pill-row">
-            <span className="about-pill">{aboutData.aboutCurrently}</span>
-            {aboutData.aboutAvailability && (
-              <span className="about-pill about-pill--secondary">
-                {aboutData.aboutAvailability}
-              </span>
-            )}
-          </div>
-          <p className="about-tagline">{aboutData.aboutTagline}</p>
-          <p className="about-body">{aboutData.aboutBio}</p>
         </header>
 
-        <section className="about-section">
-          <h2 className="about-label">notable</h2>
-          <p className="about-notable__primary">{aboutData.aboutNotable.primary}</p>
-          <p className="about-notable__secondary">{aboutData.aboutNotable.secondary}</p>
+        <TerminalWindow title="maxwell — bash — 80x24">
+          <Prompt>cat about.json</Prompt>
+          <JsonBlock data={json} />
+        </TerminalWindow>
+
+        <section className="about-comments">
+          <Comment>
+            Computer Science at {educationData.school}, expected{' '}
+            {educationData.graduation.match(/\d{4}/)?.[0]}.
+          </Comment>
+          <Comment>{aboutData.aboutBio}</Comment>
+          <Comment>Currently: {aboutData.aboutCurrently}.</Comment>
+          <Comment>
+            Notable: {aboutData.aboutNotable.primary}. {aboutData.aboutNotable.secondary}.
+          </Comment>
+          <Comment>What's next: {lower(aboutData.aboutNext)}.</Comment>
+          <Comment>Off the clock: {lower(aboutData.aboutOffClock)}.</Comment>
         </section>
 
-        <section className="about-section">
-          <div className="about-interests">
-            <div className="about-interests__col">
-              <h2 className="about-label">what's next</h2>
-              <p className="about-body">{aboutData.aboutNext}</p>
-            </div>
-            <div className="about-interests__col">
-              <h2 className="about-label">off the clock</h2>
-              <p className="about-body">{aboutData.aboutOffClock}</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="about-section">
-          <h2 className="about-label">in the oven</h2>
-          <p className="about-building">
-            <span className="about-building__name">{building.name}</span>
-            {' — '}
-            {building.description}
-          </p>
-          <a
-            href={building.url}
-            className="about-building__link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {building.url.replace('https://', '')}
-          </a>
+        <section className="about-comments about-comments--oven">
+          <Comment className="about-comment--head">in the oven</Comment>
+          <Comment>
+            <span className="about-building__name">{building.name}</span>: {building.description}
+          </Comment>
+          <Comment>
+            <a
+              href={building.url}
+              className="about-building__link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {building.url.replace('https://', '')}
+            </a>
+          </Comment>
         </section>
       </div>
     </div>
@@ -206,17 +216,7 @@ function AboutPanel() {
 }
 
 function ExperiencePanel() {
-  return (
-    <div className="tab-panel tab-panel--list">
-      <div className="experience-expandable-grid">
-        {experienceData.map((exp, i) => (
-          <ExperienceTiltCard key={exp.id}>
-            <ExperienceCard exp={exp} index={i} />
-          </ExperienceTiltCard>
-        ))}
-      </div>
-    </div>
-  );
+  return <ExperienceLog />;
 }
 
 function ProjectsPanel() {
