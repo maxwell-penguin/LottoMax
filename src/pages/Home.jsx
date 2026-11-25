@@ -16,8 +16,7 @@ import {
   aboutData,
   educationData,
 } from '../data/content';
-import { ProjectCarousel } from '@/components/ui/project-carousel';
-import { ExpandableCardGroup } from '@/components/ui/expandable-card';
+import ProjectMesh from '@/components/ProjectMesh';
 import { useTheme } from '@/hooks/use-theme';
 
 function IconGithub({ size = 18 }) {
@@ -220,15 +219,7 @@ function ExperiencePanel() {
 }
 
 function ProjectsPanel() {
-  return (
-    <div className="tab-panel tab-panel--list tab-panel--projects">
-      <section className="projects-carousel-section">
-        <ExpandableCardGroup>
-          <ProjectCarousel projects={projectsData} />
-        </ExpandableCardGroup>
-      </section>
-    </div>
-  );
+  return <ProjectMesh projects={projectsData} />;
 }
 
 function ResumePanel() {
