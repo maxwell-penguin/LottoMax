@@ -86,23 +86,3 @@
 .gb-note { font-size: 13px; font-style: italic; color: #8B8070; text-align: center; }
 .gb-note--error { margin-top: 8px; color: #E8856A; }
 .gb-count { margin-top: 16px; font-size: 11px; text-align: center; color: #8B8070; }
-
-/* Nudge toast */
-.gb-toast {
-  position: fixed;
-  left: 50%;
-  translate: -50% 0;
-  bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
-  z-index: 20;
-  padding: 0.5rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: #3D3830;
-  background: #FAF6EE;
-  border: 1px solid #E5DFD2;
-  border-radius: 999px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.gb-toast a { color: #E8856A; text-decoration: underline; }

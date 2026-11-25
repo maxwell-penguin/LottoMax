@@ -43,7 +43,6 @@ export function GuestbookPanel() {
   const [newId, setNewId] = useState(null);
 
   useEffect(() => {
-    try { sessionStorage.setItem('gb_nudge', '1'); } catch { /* ignore */ }
     if (!supabase) return setStatus('offline');
     (async () => {
       const [list, total, hash] = await Promise.all([

@@ -1,13 +1,13 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import BookCover from '@/components/BookCover';
 import ClaudeBot from '@/components/ClaudeBot';
 import KoiFish from '@/components/KoiFish';
 import MeteorImpact from '@/components/MeteorImpact';
 import { GuestbookPanel } from '@/components/Guestbook';
-import { GalleryPanel } from '@/components/Bookshelf';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, LayoutGrid, Moon, Sun } from 'lucide-react';
+import TerminalHeader from '@/components/TerminalHeader';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import '../styles/Home.css';
 import {
   experienceData,
@@ -67,14 +67,16 @@ function IconMail({ size = 18 }) {
   );
 }
 
+// Route table. `hidden` routes work by URL but aren't in the header tabs.
 const SECTIONS = [
-  { path: 'about', label: 'About Me', hint: "who i am", Panel: AboutPanel },
-  { path: 'experiences', label: 'Experiences', hint: "where i've been", Panel: ExperiencePanel },
-  { path: 'projects', label: 'Projects', hint: "what i've built", Panel: ProjectsPanel },
-  { path: 'resume', label: 'Resume', hint: 'the formal stuff', Panel: ResumePanel },
-  { path: 'gallery', label: 'Gallery', hint: 'some moments', Panel: GalleryPanel },
-  { path: 'guestbook', label: 'Guestbook', hint: 'sign the book', Panel: GuestbookPanel },
+  { path: 'about', label: 'about', Panel: AboutPanel },
+  { path: 'experience', label: 'experience', Panel: ExperiencePanel },
+  { path: 'projects', label: 'projects', Panel: ProjectsPanel },
+  { path: 'resume', label: 'resume', Panel: ResumePanel },
+  { path: 'contact', label: 'contact', Panel: ContactPanel },
+  { path: 'guestbook', label: 'guestbook', Panel: GuestbookPanel, hidden: true },
 ];
+const NAV = SECTIONS.filter((x) => !x.hidden);
 
 // Easter egg content. Add a playlist URL to show the "listening to" line.
 const SECRET_PLAYLIST = { label: '', url: '' };
@@ -101,7 +103,7 @@ function SecretPanel() {
             <a href={`mailto:${aboutData.email}`}>say hi</a>
           </li>
         </ul>
-        <p className="secret-card__note">this page isn't in the table of contents. nice find.</p>
+        <p className="secret-card__note">this page isn't linked anywhere. nice find.</p>
       </div>
     </div>
   );
@@ -109,55 +111,17 @@ function SecretPanel() {
 
 const RESUME_URL = '/resume.pdf';
 
-// Secret page unfolds from the top-right corner (the dog-ear).
+// Secret page unfolds from the top-right corner.
 const secretVariants = {
   initial: { opacity: 0, clipPath: 'circle(0% at 100% 0%)' },
   animate: { opacity: 1, clipPath: 'circle(150% at 100% 0%)', transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
   exit: { opacity: 0, transition: { duration: 0.2 } },
 };
 
-// dir: 1 = forward (turn page left), -1 = backward (turn page right), 0 = fade
-const pageFlipEase = [0.45, 0.05, 0.25, 1];
 const tabContentVariants = {
-  initial: (dir) =>
-    dir === 0
-      ? { opacity: 0, zIndex: 1 }
-      : {
-          opacity: 1,
-          rotateY: dir > 0 ? 88 : -88,
-          transformPerspective: 2000,
-          transformOrigin: dir > 0 ? 'left center' : 'right center',
-          filter: 'brightness(0.88)',
-          boxShadow: dir > 0
-            ? '18px 0 36px rgba(0,0,0,0.22)'
-            : '-18px 0 36px rgba(0,0,0,0.22)',
-          zIndex: 1,
-        },
-  animate: (dir) => ({
-    opacity: 1,
-    rotateY: 0,
-    filter: 'brightness(1)',
-    boxShadow: '0 0 0 rgba(0,0,0,0)',
-    transformPerspective: 2000,
-    transformOrigin: dir >= 0 ? 'left center' : 'right center',
-    zIndex: 1,
-    transition: { duration: 0.78, ease: pageFlipEase },
-  }),
-  exit: (dir) =>
-    dir === 0
-      ? { opacity: 0, zIndex: 2, transition: { duration: 0.25 } }
-      : {
-          opacity: 0.55,
-          rotateY: dir > 0 ? -118 : 118,
-          transformPerspective: 2000,
-          transformOrigin: dir > 0 ? 'left center' : 'right center',
-          filter: 'brightness(0.72)',
-          boxShadow: dir > 0
-            ? '-28px 0 48px rgba(0,0,0,0.28)'
-            : '28px 0 48px rgba(0,0,0,0.28)',
-          zIndex: 3,
-          transition: { duration: 0.72, ease: pageFlipEase },
-        },
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
+  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 function AnimatedName({ text }) {
@@ -309,125 +273,34 @@ function ResumePanel() {
   );
 }
 
-const THEME_LABEL = {
-  light: 'Switch to dark mode',
-  dark: 'Hollow Purple',
-  purple: 'Switch to light mode',
-};
-
-function TopBar({ section, theme, toggleTheme }) {
-  const wordmark = 'Maxwell Peng';
+function ContactPanel() {
+  const links = [
+    { label: 'email', href: `mailto:${aboutData.email}`, text: aboutData.email, Icon: IconMail },
+    { label: 'linkedin', href: aboutData.linkedin, text: 'linkedin.com/in/maxwell-peng', Icon: IconLinkedIn },
+    { label: 'github', href: aboutData.github, text: aboutData.github.replace('https://', ''), Icon: IconGithub },
+    { label: 'x', href: 'https://x.com/wobblbobby', text: '@wobblbobby', Icon: IconX },
+  ];
   return (
-    <header className="portfolio-top-bar">
-      <div className="portfolio-top-bar__inner">
-        {section && (
-          <span className="portfolio-wordmark" aria-label="Maxwell Peng">
-            {wordmark.split('').map((char, i) => (
-              <span
-                key={i}
-                className="portfolio-wordmark__letter"
-                style={{ '--i': i }}
-                aria-hidden
+    <div className="tab-panel tab-panel--contact">
+      <div className="about-page">
+        <h2 className="about-label">contact</h2>
+        <p className="about-body">The fastest way to reach me is email. I read everything.</p>
+        <ul className="contact-list">
+          {links.map(({ label, href, text, Icon }) => (
+            <li key={label}>
+              <a
+                href={href}
+                className="contact-link"
+                {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >
-                {char === ' ' ? '\u00A0' : char}
-              </span>
-            ))}
-          </span>
-        )}
-        <div className="portfolio-social">
-          <a
-            href={aboutData.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="portfolio-social__link"
-            aria-label="GitHub"
-          >
-            <IconGithub size={18} />
-          </a>
-          <a
-            href={aboutData.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="portfolio-social__link"
-            aria-label="LinkedIn"
-          >
-            <IconLinkedIn size={18} />
-          </a>
-          <a
-            href="https://x.com/wobblbobby"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="portfolio-social__link"
-            aria-label="X (Twitter)"
-          >
-            <IconX size={18} />
-          </a>
-          <a href={`mailto:${aboutData.email}`} className="portfolio-social__link" aria-label="Email">
-            <IconMail size={18} />
-          </a>
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="portfolio-social__link portfolio-theme-toggle"
-            aria-label={THEME_LABEL[theme]}
-            title={theme === 'dark' ? 'Hollow Purple' : undefined}
-          >
-            {/* shows the theme you'll get next: light -> moon, dark -> orb, purple -> sun */}
-            {theme === 'light' ? <Moon size={18} /> : theme === 'dark' ? <span className="theme-orb" /> : <Sun size={18} />}
-          </button>
-        </div>
+                <Icon size={18} />
+                <span className="contact-link__label">{label}</span>
+                <span className="contact-link__text">{text}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
-    </header>
-  );
-}
-
-function TocNav() {
-  return (
-    <nav className="landing" aria-label="Sections">
-      <h1 className="landing__header">table of contents</h1>
-      <ul className="landing__list">
-        {SECTIONS.map((x, i) => (
-          <li key={x.path}>
-            <Link to={`/${x.path}`} className="landing__tile">
-              <span className="landing__num">{String(i + 1).padStart(2, '0')} —</span>
-              <span className="landing__label">{x.label}</span>
-              <span className="landing__hint">{x.hint}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
-
-// Page-flip overlay: TOC sheet curls away like turning a real page.
-function FlipSheet({ side, onDone }) {
-  const left = side === 'left';
-  return (
-    <div className="flip-stage" aria-hidden>
-      <motion.div
-        className="portfolio-container portfolio-container--tabs flip-sheet"
-        style={{
-          transformOrigin: left ? 'left center' : 'right center',
-          transformPerspective: 1800,
-        }}
-        initial={{ rotateY: 0, opacity: 1, filter: 'brightness(1)' }}
-        animate={{
-          rotateY: left ? -128 : 128,
-          opacity: [1, 1, 0.85, 0],
-          filter: ['brightness(1)', 'brightness(0.95)', 'brightness(0.75)'],
-        }}
-        transition={{ duration: 0.95, ease: pageFlipEase }}
-        onAnimationComplete={onDone}
-      >
-        <div className="flip-sheet__shade" />
-        <TopBar section={null} theme="" toggleTheme={() => {}} />
-        <main className="portfolio-main">
-          <div className="portfolio-tab-surface">
-            <TocNav />
-          </div>
-        </main>
-      </motion.div>
     </div>
   );
 }
@@ -438,74 +311,23 @@ let coverSeen = false;
 function Home({ setShowAudio }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const isSecret = pathname.replace(/\/+$/, '') === '/secret';
-  const section = SECTIONS.find((x) => pathname.replace(/\/+$/, '') === `/${x.path}`);
   const { theme, toggleTheme, transition: themeFlash, transitionGo: themeGo } = useTheme();
-  const [showCover, setShowCover] = useState(() => !coverSeen && pathname === '/');
+  const path = pathname.replace(/\/+$/, '') || '/';
+  const isSecret = path === '/secret';
+  const match = SECTIONS.find((x) => path === `/${x.path}`);
+  // '/' (behind the cover) and unknown paths show About
+  const section = isSecret ? null : match ?? SECTIONS[0];
+  const [showCover, setShowCover] = useState(() => !coverSeen && path === '/');
   const openCover = useCallback(() => {
     coverSeen = true;
     setShowCover(false);
-  }, []);
+    navigate('/about', { replace: true });
+  }, [navigate]);
 
-  const [dir, setDir] = useState(1);
-  const [flip, setFlip] = useState(null); // 'left' | 'right' while a page-flip plays
-  const startFlip = (side) => {
-    setFlip(side);
-    if (side === 'left') {
-      setShowCover(true);
-    } else {
-      setDir(0); // fade only; the flip supplies the motion
-      navigate('/about');
-    }
-  };
-  const idx = section ? SECTIONS.indexOf(section) : -1;
-  const viaNext = useRef(false); // true only when arriving by a "next page" action
-  const go = useCallback(
-    (to, d, seq = false) => {
-      viaNext.current = seq;
-      setDir(d);
-      navigate(to);
-    },
-    [navigate],
-  );
-  const goNext = () => go(idx === SECTIONS.length - 1 ? '/' : `/${SECTIONS[idx + 1].path}`, 1, true);
-  const goPrev = () => go(idx <= 0 ? '/' : `/${SECTIONS[idx - 1].path}`, -1);
-  const goToc = () => go('/', -1);
-
-  // Latest handlers for the key listener without re-subscribing.
-  const keysRef = useRef({});
-  keysRef.current = { goNext, goPrev, goToc, active: Boolean(section) && !showCover };
+  // '/', /gallery, /experiences, anything unknown -> /about (once the intro isn't showing)
   useEffect(() => {
-    const onKey = (e) => {
-      const k = keysRef.current;
-      if (!k.active || e.metaKey || e.ctrlKey || e.altKey) return;
-      // Leave arrows/Escape to inputs, the project carousel, and open modals.
-      if (e.target.closest?.('input, textarea, .project-carousel__viewport')) return;
-      if (document.querySelector('.xc-overlay, .fixed.inset-0.z-50')) return;
-      if (e.key === 'ArrowRight') k.goNext();
-      else if (e.key === 'ArrowLeft') k.goPrev();
-      else if (e.key === 'Escape') k.goToc();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, []);
-
-  // One-time nudge: arrived at Gallery via "next", once per session.
-  const [nudge, setNudge] = useState(false);
-  useEffect(() => {
-    if (section?.path !== 'gallery' || !viaNext.current) return;
-    try { if (sessionStorage.getItem('gb_nudge')) return; } catch { return; }
-    const show = setTimeout(() => {
-      try { sessionStorage.setItem('gb_nudge', '1'); } catch { /* ignore */ }
-      setNudge(true);
-    }, 2000);
-    const hide = setTimeout(() => setNudge(false), 7000);
-    return () => {
-      clearTimeout(show);
-      clearTimeout(hide);
-      setNudge(false);
-    };
-  }, [section?.path]);
+    if (!showCover && !isSecret && !match) navigate('/about', { replace: true });
+  }, [showCover, isSecret, match, navigate]);
 
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
@@ -519,8 +341,8 @@ function Home({ setShowAudio }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: 'easeInOut' }}
     >
-      <AnimatePresence>{showCover && <BookCover onOpen={openCover} behind={Boolean(flip)} />}</AnimatePresence>
-      <TopBar section={section} theme={theme} toggleTheme={toggleTheme} />
+      <AnimatePresence>{showCover && <BookCover onOpen={openCover} />}</AnimatePresence>
+      <TerminalHeader nav={NAV} path={path} theme={theme} toggleTheme={toggleTheme} navigate={navigate} />
 
       {theme === 'dark' && <div className="dark-crater" aria-hidden />}
       {theme === 'purple' && <div className="purple-field" aria-hidden><i className="purple-field__orb purple-field__orb--red" /><i className="purple-field__orb purple-field__orb--blue" /><i className="purple-field__core" /></div>}
@@ -559,109 +381,29 @@ function Home({ setShowAudio }) {
       ) : null}
 
       <main className="portfolio-main">
-        <AnimatePresence mode="sync" custom={dir}>
+        <AnimatePresence mode="sync">
           <motion.div
-            key={isSecret ? 'secret' : section ? section.path : 'home'}
-            custom={dir}
+            key={isSecret ? 'secret' : section.path}
             className="portfolio-tab-surface"
             variants={isSecret ? secretVariants : tabContentVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            {isSecret ? (
-              <SecretPanel />
-            ) : section ? (
-              <section.Panel />
-            ) : (
-              <TocNav />
-            )}
+            {isSecret ? <SecretPanel /> : <section.Panel />}
           </motion.div>
         </AnimatePresence>
       </main>
 
       <ClaudeBot
-        sectionKey={isSecret ? 'secret' : section ? section.path : 'home'}
-        active={!showCover && !flip && !isSecret && section?.path !== 'about'}
+        sectionKey={isSecret ? 'secret' : section.path}
+        active={!showCover && !isSecret && section.path !== 'about'}
       />
 
-      <AnimatePresence>
-        {nudge && (
-          <motion.div
-            className="gb-toast"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setNudge(false)}
-          >
-            you've reached the end —{' '}
-            <Link to="/guestbook">sign the book</Link>?
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/*
-        Edge flip zones on every book page (TOC + sections).
-        Book order: TOC (first) → about → … → guestbook (last).
-        First page = forward only; last page = back only; middle = both.
-      */}
-      {!isSecret && !showCover && !flip && (
-        <>
-          {section && (
-            <button
-              type="button"
-              className="flip-zone flip-zone--left"
-              onClick={goPrev}
-              tabIndex={-1}
-              aria-hidden
-            />
-          )}
-          {(!section || idx < SECTIONS.length - 1) && (
-            <button
-              type="button"
-              className="flip-zone flip-zone--right"
-              onClick={section ? goNext : () => startFlip('right')}
-              tabIndex={-1}
-              aria-hidden
-            />
-          )}
-        </>
-      )}
-      {flip && <FlipSheet side={flip} onDone={() => setFlip(null)} />}
-
-      {!section && !isSecret && !showCover && !flip && (
-        <Link to="/secret" className="dog-ear" aria-label="Secret page" />
-      )}
-
       {isSecret && (
-        <button type="button" className="portfolio-back" onClick={goToc} aria-label="Back to contents">
+        <button type="button" className="portfolio-back" onClick={() => navigate('/about')} aria-label="Back to about">
           <ArrowLeft size={18} />
         </button>
-      )}
-
-      {section && (
-        <>
-          <button type="button" className="portfolio-back" onClick={goPrev} aria-label={idx === 0 ? 'Back to contents' : 'Previous section'}>
-            <ArrowLeft size={18} />
-          </button>
-          <div className="portfolio-pager">
-            <span>
-              {String(idx + 1).padStart(2, '0')} / {String(SECTIONS.length).padStart(2, '0')}
-            </span>
-            <button type="button" className="portfolio-pager__toc" onClick={goToc} aria-label="Table of contents">
-              <LayoutGrid size={14} />
-            </button>
-          </div>
-          <button
-            type="button"
-            className="portfolio-back portfolio-back--next"
-            onClick={goNext}
-            aria-label={idx === SECTIONS.length - 1 ? 'Back to contents' : 'Next section'}
-          >
-            <ArrowRight size={18} />
-          </button>
-        </>
       )}
     </motion.div>
   );

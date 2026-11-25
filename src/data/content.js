@@ -305,18 +305,6 @@ export const projectsData = [
   }
 ];
 
-/** Years shown in the Gallery tab (oldest to newest, left to right). Each key must exist on `photosByYear`. */
-export const photosYearOrder = [2025, 2026];
-
-/** Per-year gallery rows: `{ id?, caption, src? }[]` — `src` optional; without it, a grey placeholder is shown. */
-export const photosByYear = {
-  2026: [],
-  2025: [],
-};
-
-/** Miscellaneous gallery photos that don't belong to a specific year: `{ id?, caption, src? }[]`. */
-export const photosMisc = [];
-
 export const interestsData = [
   "Penny Stocks & Trading",
   "Basketball & Swimming (Regional)",
@@ -327,26 +315,4 @@ export const interestsData = [
   "Western Founders Network - Software Engineer",
   "Western Science Student Council - Finance Director",
   "Varsity Badminton"
-];
-// Gallery bookshelves. Photo shelves: drop images in /public/gallery/<shelf>/ and set `image`.
-// A book with no `image` renders as a plain colored spine. Labels/captions filled in later.
-const placeholders = (count) =>
-  Array.from({ length: count }, (_, i) => ({ id: i + 1, label: "", image: "", caption: "" }));
-
-export const bookshelfData = [
-  { shelf: "travel & adventures", books: placeholders(5) },
-  { shelf: "team canada", books: placeholders(5) },
-  { shelf: "hackathons & builds", books: placeholders(5) },
-  { shelf: "food", books: placeholders(5) },
-  {
-    shelf: "reading list",
-    books: [
-      { id: 1, title: "", author: "", color: "#2C4A5C", note: "" },
-      { id: 2, title: "", author: "", color: "#4A6B5D", note: "" },
-      { id: 3, title: "", author: "", color: "#7A2E3A", note: "" },
-      { id: 4, title: "", author: "", color: "#C79A2E", note: "" },
-      { id: 5, title: "", author: "", color: "#4B3F72", note: "" },
-      { id: 6, title: "", author: "", color: "#3D3830", note: "" },
-    ],
-  },
 ];
