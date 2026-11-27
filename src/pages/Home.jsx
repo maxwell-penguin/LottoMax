@@ -1,10 +1,9 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, useCallback } from 'react';
 import BookCover from '@/components/BookCover';
 import ClaudeBot from '@/components/ClaudeBot';
 import KoiFish from '@/components/KoiFish';
 import MeteorImpact from '@/components/MeteorImpact';
-import { GuestbookPanel } from '@/components/Guestbook';
 import TerminalHeader from '@/components/TerminalHeader';
 import TerminalWindow, { JsonBlock, Prompt } from '@/components/TerminalWindow';
 import ExperienceLog from '@/components/ExperienceLog';
@@ -62,25 +61,24 @@ function IconMail({ size = 18 }) {
   );
 }
 
-// Route table. `hidden` routes work by URL but aren't in the header tabs.
+// Route table (one entry per header tab).
 const SECTIONS = [
   { path: 'about', label: 'about', Panel: AboutPanel },
   { path: 'experience', label: 'experience', Panel: ExperiencePanel },
   { path: 'projects', label: 'projects', Panel: ProjectsPanel },
   { path: 'resume', label: 'resume', Panel: ResumePanel },
   { path: 'contact', label: 'contact', Panel: ContactPanel },
-  { path: 'guestbook', label: 'guestbook', Panel: GuestbookPanel, hidden: true },
 ];
-const NAV = SECTIONS.filter((x) => !x.hidden);
+const NAV = SECTIONS;
 
 // Easter egg content. Add a playlist URL to show the "listening to" line.
 const SECRET_PLAYLIST = { label: '', url: '' };
 
 function SecretPanel() {
   return (
-    <div className="tab-panel gb-page">
-      <div className="gb-card secret-card">
-        <div className="gb-card__tab" aria-hidden />
+    <div className="tab-panel secret-page">
+      <div className="secret-card">
+        <div className="secret-card__tab" aria-hidden />
         <h2 className="secret-card__title">you found it</h2>
         <ul className="secret-card__list">
           {SECRET_PLAYLIST.url && (
@@ -111,12 +109,6 @@ const secretVariants = {
   initial: { opacity: 0, clipPath: 'circle(0% at 100% 0%)' },
   animate: { opacity: 1, clipPath: 'circle(150% at 100% 0%)', transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
   exit: { opacity: 0, transition: { duration: 0.2 } },
-};
-
-const tabContentVariants = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } },
-  exit: { opacity: 0, transition: { duration: 0.15 } },
 };
 
 function AnimatedName({ text }) {
@@ -238,6 +230,7 @@ function ResumePanel() {
           <iframe
             src={`${RESUME_URL}#view=FitH`}
             title="Maxwell Peng Resume"
+            loading="lazy"
             className="resume-window__iframe"
           />
         </div>
@@ -315,10 +308,69 @@ function Home({ setShowAudio }) {
     navigate('/about', { replace: true });
   }, [navigate]);
 
-  // '/', /gallery, /experiences, anything unknown -> /about (once the intro isn't showing)
+  // '/', old routes (e.g. /experiences), anything unknown -> /about (once the intro isn't showing)
   useEffect(() => {
     if (!showCover && !isSecret && !match) navigate('/about', { replace: true });
   }, [showCover, isSecret, match, navigate]);
+
+  // ── single scrollable page: every section is a full-height scroll-snap block ──
+  const scrollerRef = useRef(null);
+  const target = useRef(null); // section we're smooth-scrolling to (ignore passing sections)
+  const settleTimer = useRef();
+  const pathRef = useRef(path);
+  pathRef.current = path;
+  const [live, setLive] = useState(section ? section.path : SECTIONS[0].path); // section in view
+
+  const sectionInView = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return SECTIONS[0].path;
+    const y = el.scrollTop + el.clientHeight * 0.4;
+    let name = SECTIONS[0].path;
+    for (const x of SECTIONS) {
+      const sec = el.querySelector(`#s-${x.path}`);
+      if (sec && sec.offsetTop <= y) name = x.path;
+    }
+    return name;
+  }, []);
+
+  const scrollToSection = useCallback((name, behavior) => {
+    const sec = scrollerRef.current?.querySelector(`#s-${name}`);
+    if (!sec) return;
+    target.current = behavior === 'smooth' ? name : null;
+    sec.scrollIntoView({ behavior, block: 'start' });
+    if (behavior === 'smooth') window.setTimeout(() => { target.current = null; }, 1500);
+  }, []);
+
+  // direct URLs (/experience) and coming back from /secret land on the right section, no animation
+  useLayoutEffect(() => {
+    if (isSecret) return;
+    scrollToSection(section.path, 'instant');
+    setLive(section.path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSecret]);
+
+  // URL changed (tab click, `cd`, back/forward) -> smooth-scroll there
+  useEffect(() => {
+    if (isSecret || showCover || !scrollerRef.current) return;
+    if (sectionInView() === section.path) return;
+    scrollToSection(section.path, 'smooth');
+  }, [path]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // scrolling: highlight live, push the URL once the scroll settles
+  const onScroll = useCallback(() => {
+    const name = sectionInView();
+    setLive((prev) => (prev === name ? prev : name));
+    window.clearTimeout(settleTimer.current);
+    settleTimer.current = window.setTimeout(() => {
+      const settled = sectionInView();
+      if (target.current) {
+        if (settled !== target.current) return;
+        target.current = null;
+      }
+      if (pathRef.current !== `/${settled}`) navigate(`/${settled}`);
+    }, 140);
+  }, [navigate, sectionInView]);
+  useEffect(() => () => window.clearTimeout(settleTimer.current), []);
 
   useEffect(() => {
     if (setShowAudio) setShowAudio(false);
@@ -333,7 +385,7 @@ function Home({ setShowAudio }) {
       transition={{ duration: 1, ease: 'easeInOut' }}
     >
       <AnimatePresence>{showCover && <BookCover onOpen={openCover} />}</AnimatePresence>
-      <TerminalHeader nav={NAV} path={path} theme={theme} toggleTheme={toggleTheme} navigate={navigate} />
+      <TerminalHeader nav={NAV} path={path} active={isSecret ? null : `/${live}`} theme={theme} toggleTheme={toggleTheme} navigate={navigate} />
 
       {theme === 'dark' && <div className="dark-crater" aria-hidden />}
       {theme === 'purple' && <div className="purple-field" aria-hidden><i className="purple-field__orb purple-field__orb--red" /><i className="purple-field__orb purple-field__orb--blue" /><i className="purple-field__core" /></div>}
@@ -372,24 +424,28 @@ function Home({ setShowAudio }) {
       ) : null}
 
       <main className="portfolio-main">
-        <AnimatePresence mode="sync">
+        {isSecret ? (
           <motion.div
-            key={isSecret ? 'secret' : section.path}
+            key="secret"
             className="portfolio-tab-surface"
-            variants={isSecret ? secretVariants : tabContentVariants}
+            variants={secretVariants}
             initial="initial"
             animate="animate"
-            exit="exit"
           >
-            {isSecret ? <SecretPanel /> : <section.Panel />}
+            <SecretPanel />
           </motion.div>
-        </AnimatePresence>
+        ) : (
+          <div ref={scrollerRef} className="portfolio-tab-surface snap-surface" onScroll={onScroll}>
+            {SECTIONS.map((x) => (
+              <section key={x.path} id={`s-${x.path}`} className="snap-section" aria-label={x.label}>
+                <x.Panel />
+              </section>
+            ))}
+          </div>
+        )}
       </main>
 
-      <ClaudeBot
-        sectionKey={isSecret ? 'secret' : section.path}
-        active={!showCover && !isSecret && section.path !== 'about'}
-      />
+      <ClaudeBot sectionKey={isSecret ? 'secret' : live} active={!showCover && !isSecret && live !== 'about'} />
 
       {isSecret && (
         <button type="button" className="portfolio-back" onClick={() => navigate('/about')} aria-label="Back to about">

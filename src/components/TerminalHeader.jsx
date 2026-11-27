@@ -27,7 +27,7 @@ const HELP = [
  * Output renders in a panel under the prompt (overlay, so page content never shifts) and is
  * cleared by `clear` or by navigating.
  */
-export default function TerminalHeader({ nav, path, theme, toggleTheme, navigate }) {
+export default function TerminalHeader({ nav, path, active = path, theme, toggleTheme, navigate }) {
   const [value, setValue] = useState('');
   const [entries, setEntries] = useState([]); // { cmd, lines: [{ text, muted }] }
   const history = useRef([]);
@@ -90,6 +90,17 @@ export default function TerminalHeader({ nav, path, theme, toggleTheme, navigate
         );
       case 'whoami':
         return out([`${aboutData.name}: builder, founder, student. Currently ${aboutData.aboutCurrently}.`]);
+      case 'sudo':
+      case 'su': {
+        // hidden: not listed in `help`. `sudo su` / `sudo -i` / `su` -> /secret
+        const rest = args.join(' ');
+        const root = cmd === 'su' || rest === 'su' || rest === '-i' || rest === '-s';
+        if (!root) {
+          return out([{ text: 'visitor is not in the sudoers file. This incident will be reported.', muted: true }]);
+        }
+        window.setTimeout(() => navigate('/secret'), 700);
+        return out(['[sudo] password for visitor: ********', 'access granted. welcome, root.']);
+      }
       case 'help':
         return out(HELP);
       case 'clear':
@@ -165,8 +176,8 @@ export default function TerminalHeader({ nav, path, theme, toggleTheme, navigate
           <Link
             key={n.path}
             to={`/${n.path}`}
-            className={`term__tab${path === `/${n.path}` ? ' is-active' : ''}`}
-            aria-current={path === `/${n.path}` ? 'page' : undefined}
+            className={`term__tab${active === `/${n.path}` ? ' is-active' : ''}`}
+            aria-current={active === `/${n.path}` ? 'page' : undefined}
           >
             {n.label}
           </Link>

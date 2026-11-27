@@ -49,7 +49,7 @@ const PAPER_SEEDS = [
 /**
  * scatter → assemble → merge (papers gone, solid book) → tilt → zoom → ready
  */
-export default function BookCover({ onOpen, behind = false }) {
+export default function BookCover({ onOpen }) {
   const [phase, setPhase] = useState(() =>
     prefersReducedMotion() ? 'ready' : 'scatter',
   );
@@ -126,7 +126,6 @@ export default function BookCover({ onOpen, behind = false }) {
   return (
     <div
       className="cover-stage"
-      style={behind ? { zIndex: 90 } : undefined}
       data-phase={phase}
     >
       <AnimatePresence>
