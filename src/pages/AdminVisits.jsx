@@ -25,7 +25,7 @@ export default function AdminVisits() {
     // The password is checked inside the database (see supabase/schema.sql); it is never in this bundle.
     const { data, error: err } = await supabase.rpc('site_visits_admin', { p_password: pw, p_limit: 100 });
     setBusy(false);
-    if (err) return setError(err.message.includes('unauthorized') ? 'wrong password' : 'could not load visits');
+    if (err) return setError(err.message.includes('unauthorized') ? 'incorrect password' : 'could not load visits');
     setRows(data ?? []);
   };
 
