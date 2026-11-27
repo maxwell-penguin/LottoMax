@@ -437,7 +437,8 @@ body {
   overflow-y: auto;
 }
 
-.tab-panel.tab-panel--about {
+.tab-panel.tab-panel--about,
+.tab-panel.tab-panel--contact {
   box-sizing: border-box;
   width: 100%;
   max-width: 680px;
@@ -2282,7 +2283,7 @@ body {
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* content flows from the top in every section */
   padding: 1rem 0 2rem;
 }
 @media (prefers-reduced-motion: reduce) {
