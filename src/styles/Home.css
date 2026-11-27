@@ -2289,3 +2289,27 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .snap-surface { scroll-behavior: auto; }
 }
+
+.contact-note { margin: 2rem 0 0; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-tertiary); }
+
+/* ── /admin/visits (unlisted) ──────────────────────────────────────────── */
+.admin { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.25rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-primary); min-height: 100vh; background: var(--bg); }
+.admin__lock { display: flex; flex-direction: column; gap: 0.6rem; max-width: 18rem; margin: 20vh auto 0; }
+.admin__lock label { color: var(--text-tertiary); }
+.admin__lock input { padding: 0.5rem 0.6rem; font: inherit; color: var(--text-primary); background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 6px; }
+.admin__lock button { padding: 0.5rem; font: inherit; color: var(--text-primary); background: none; border: 1px solid var(--card-border); border-radius: 6px; cursor: pointer; }
+.admin__lock button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.admin__err { margin: 0; color: var(--text-tertiary); }
+.admin__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1.5rem; margin-bottom: 1rem; }
+.admin__head h1 { margin: 0; font-size: 1rem; font-weight: 600; }
+.admin__toggle { display: inline-flex; align-items: center; gap: 0.5ch; color: var(--text-secondary); cursor: pointer; }
+.admin__count { margin-left: auto; color: var(--text-tertiary); }
+.admin__scroll { overflow-x: auto; border: 1px solid var(--card-border); border-radius: 8px; }
+.admin__table { width: 100%; border-collapse: collapse; }
+.admin__table th, .admin__table td { padding: 0.5rem 0.75rem; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--card-border); }
+.admin__table th { color: var(--text-tertiary); font-weight: 500; background: color-mix(in srgb, var(--text-primary) 4%, var(--card-bg)); }
+.admin__table tr:last-child td { border-bottom: 0; }
+.admin__table td { color: var(--text-secondary); }
+.admin__table tr.is-company td { color: var(--text-primary); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.admin__table tr.is-company td:nth-child(3) { color: var(--accent); font-weight: 600; }
+.admin__empty { text-align: center; color: var(--text-tertiary); }

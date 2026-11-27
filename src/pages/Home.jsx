@@ -284,6 +284,7 @@ function ContactPanel() {
             </li>
           ))}
         </ul>
+        <p className="contact-note">This site uses basic analytics to see where visitors come from.</p>
       </div>
     </div>
   );
